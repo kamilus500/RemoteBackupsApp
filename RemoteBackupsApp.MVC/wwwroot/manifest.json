@@ -1,0 +1,7 @@
+﻿{
+  "name": "PWADemo",
+  "short_name": "PWA",
+  "description": "Demo PWA application in ASP.NET Core.",
+  "display": "standalone",
+  "start_url": "/"
+}
