@@ -63,7 +63,7 @@ namespace RemoteBackupsApp.Infrastructure.Services
 
         public async Task<BackupViewModel> GetBackup(string backupId)
         {
-            var backup = await _dbContext.QueryFirstOrDefaultAsync<BackupViewModel>("SELECT Id, BackupName, CreationDate FROM BackupTable WHERE Id = @0", backupId);
+            var backup = await _dbContext.QueryFirstOrDefaultAsync<BackupViewModel>("SELECT Id, BackupName, CreationDate FROM BackupTable WHERE Id = @0 ORDER BY CreationDate DESC", backupId);
 
             if (backup is null)
                 throw new ArgumentNullException(nameof(backup));
