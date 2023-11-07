@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RemoteBackupsApp.Infrastructure.Services.Interfaces;
+using RemoteBackupsApp.MVC.Models;
+using System.Diagnostics;
 
 namespace RemoteBackupsApp.MVC.Controllers
 {
@@ -34,7 +36,7 @@ namespace RemoteBackupsApp.MVC.Controllers
             }
             catch
             {
-                return View();
+                return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
             }
         }
 
@@ -43,6 +45,13 @@ namespace RemoteBackupsApp.MVC.Controllers
             var uploadFileViewModel = await _backupService.DownloadBackup(backupId);
 
             return File(uploadFileViewModel.EncryptedData, uploadFileViewModel.ContentType, fileDownloadName: uploadFileViewModel.BackupName);
+        }
+
+        public async Task<ActionResult> Delete(string backupId)
+        {
+            await _backupService.DeleteBackup(backupId);
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }

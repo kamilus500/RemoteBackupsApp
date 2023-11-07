@@ -12,5 +12,7 @@ namespace RemoteBackupsApp.Infrastructure.Services.Interfaces
         public Task CreateBackup(IFormFile file);
         
         public Task<UploadBackupFileViewModel> DownloadBackup(string id);
+
+        public Task DeleteBackup(string backupId);
     }
 }
