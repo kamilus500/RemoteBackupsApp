@@ -1,18 +1,28 @@
-html {
-  font-size: 14px;
+html, body {
+    position: relative;
+    width: 100%;
+    min-height: 100%;
 }
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+.container {
+    margin-top: 1rem;
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+.grid-container {
+    margin-top: 1rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr));
+    gap: 2rem 1rem;
 }
 
-html {
-  position: relative;
-  min-height: 100%;
+.item {
+    background-color: #f2f2f2;
+    border: 1px solid #ccc;
+}
+
+.item:hover {
+    background-color: lightgray;
+    border-color: black;
+    transition: 0.4s ease;
+    transform: scale(1.1);
 }
