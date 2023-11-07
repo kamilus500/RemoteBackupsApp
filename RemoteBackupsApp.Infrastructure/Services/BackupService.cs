@@ -43,6 +43,16 @@ namespace RemoteBackupsApp.Infrastructure.Services
             _dbContext.Execute("CreateBackup", parameters, commandType: CommandType.StoredProcedure);
         }
 
+        public async Task DeleteBackup(string backupId)
+        {
+            var parameter = new
+            {
+                BackupId = backupId
+            };
+
+            await _dbContext.ExecuteAsync("RemoveBackup", parameter, commandType: CommandType.StoredProcedure);
+        }
+
         public async Task<UploadBackupFileViewModel> DownloadBackup(string backupId)
         {
             string sqlQuery = "SELECT BackupName, EncryptedData AS Content, ContentType, AesKey, AesIv FROM BackupTable WHERE Id = @Id";
@@ -72,6 +82,6 @@ namespace RemoteBackupsApp.Infrastructure.Services
         }
 
         public async Task<IEnumerable<BackupViewModel>> GetBackups()
-            => await _dbContext.QueryAsync<BackupViewModel>("SELECT Id, BackupName, CreationDate, Size FROM BackupTable");
+            => await _dbContext.QueryAsync<BackupViewModel>("SELECT Id, BackupName, CreationDate, Size FROM BackupTable WHERE IsDeleted = 0");
     }
 }

@@ -10,8 +10,9 @@ EncryptedData VARBINARY(MAX) NOT NULL,
 ContentType NVARCHAR(50) NOT NULL,
 Size DECIMAL NOT NULL,
 AesKey VARBINARY(MAX) NOT NULL,
-AesIv VARBINARY(MAX) NOT NULL
-)
+AesIv VARBINARY(MAX) NOT NULL,
+IsDeleted BIT NOT NULL
+) 
 
 --create procedure
 CREATE OR ALTER PROCEDURE CreateBackup
@@ -26,8 +27,8 @@ AS
 BEGIN
     DECLARE @NewId UNIQUEIDENTIFIER = NEWID();
 
-    INSERT INTO BackupTable (Id, BackupName, CreationDate, Size, EncryptedData, ContentType, AesKey, AesIv)
-    VALUES (@NewId, @BackupName, @CreationDate, @Size, @EncryptedData, @ContentType, @AesKey, @AesIv);
+    INSERT INTO BackupTable (Id, BackupName, CreationDate, Size, EncryptedData, ContentType, AesKey, AesIv, IsDeleted)
+    VALUES (@NewId, @BackupName, @CreationDate, @Size, @EncryptedData, @ContentType, @AesKey, @AesIv, 0);
 END
 
 SELECT *
@@ -35,3 +36,4 @@ FROM dbo.BackupTable
 
 SELECT EncryptedData, ContentType, BackupName
 FROM BackupTable
+
