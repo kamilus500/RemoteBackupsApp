@@ -1,4 +1,19 @@
-﻿<!DOCTYPE html>
+﻿@using RemoteBackupsApp.Domain.ViewModels.User;
+@using RemoteBackupsApp.Infrastructure.Services.Interfaces;
+@inject IUserContext userContext;
+
+@{
+    string userName = string.Empty;
+    bool isLogIn = await userContext.IsUserLogIn();
+
+    if (isLogIn)
+    {
+        var user = await userContext.GetUser();
+        userName = user.UserName;
+    }
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -10,6 +25,18 @@
     <link rel="manifest" href="/manifest.json">
 </head>
 <body>
+    <div class="account-section">
+        @if (isLogIn)
+        {
+            <h3>Welcome @userName !!!</h3>
+            <a asp-controller="Auth" asp-action="LogOut" asp-route-userName="@userName" class="btn btn-primary">Wyloguj</a>
+        }
+        else
+        {
+            <a asp-controller="Auth" asp-action="Register" class="btn btn-primary">Rejestracja</a>
+            <a asp-controller="Auth" asp-action="Login" class="btn btn-primary">Logowanie</a>
+        }
+    </div>
     <div class="container">
         @RenderBody()
     </div>

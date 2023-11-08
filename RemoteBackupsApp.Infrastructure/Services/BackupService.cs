@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Microsoft.AspNetCore.Http;
-using RemoteBackupsApp.Domain.ViewModels;
+using RemoteBackupsApp.Domain.ViewModels.Backup;
+using RemoteBackupsApp.Domain.ViewModels.Encryption;
 using RemoteBackupsApp.Infrastructure.Initializers;
 using RemoteBackupsApp.Infrastructure.Services.Interfaces;
 using System.Data;
@@ -13,16 +14,20 @@ namespace RemoteBackupsApp.Infrastructure.Services
         private readonly IDbConnection _dbContext;
         private readonly IFileService _fileService;
         private readonly IEncryptionService _encryptionService;
+        private readonly IUserContext _userContext;
 
-        public BackupService(DatabaseContext databaseContext, IFileService fileService, IEncryptionService encryptionService)
+        public BackupService(DatabaseContext databaseContext, IFileService fileService, IEncryptionService encryptionService, IUserContext userContext)
         {
             _fileService = fileService;
             _dbContext = databaseContext.CreateConnection();
             _encryptionService = encryptionService;
+            _userContext = userContext;
         }
 
         public async Task CreateBackup(IFormFile file)
         {
+            var user = await _userContext.GetUser();
+
             var content = await _fileService.GetFileContent(file);
 
             var encryptedData = _encryptionService.Encrypt(content);
@@ -37,7 +42,8 @@ namespace RemoteBackupsApp.Infrastructure.Services
                 ContentType = file.ContentType.ToString(),
                 AesKey = encryptedData.AesKey,
                 AesIv = encryptedData.AesIv,
-                Size = Math.Round(fileSize,2)
+                Size = Math.Round(fileSize, 2),
+                UserId = Guid.Parse(user.Id)
             };
 
             _dbContext.Execute("CreateBackup", parameters, commandType: CommandType.StoredProcedure);

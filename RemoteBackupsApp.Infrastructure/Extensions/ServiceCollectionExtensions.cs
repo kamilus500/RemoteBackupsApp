@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +16,14 @@ namespace RemoteBackupsApp.Infrastructure.Extensions
             services.AddTransient<IBackupService, BackupService>();
             services.AddTransient<IFileService, FileService>();
             services.AddTransient<IEncryptionService, EncryptionService>();
+            services.AddTransient<IAuthenticationService, AuthenticationService>();
+            services.AddTransient<IUserContext, UserContext>();
+            services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
+
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(10);
+            });
         }
 
         public static void AddFormOptions(this IServiceCollection services)

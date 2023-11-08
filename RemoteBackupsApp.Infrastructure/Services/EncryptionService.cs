@@ -1,4 +1,4 @@
-﻿using RemoteBackupsApp.Domain.ViewModels;
+﻿using RemoteBackupsApp.Domain.ViewModels.Encryption;
 using RemoteBackupsApp.Infrastructure.Services.Interfaces;
 using System.Security.Cryptography;
 
