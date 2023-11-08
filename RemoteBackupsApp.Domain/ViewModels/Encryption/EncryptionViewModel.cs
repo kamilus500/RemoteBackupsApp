@@ -1,4 +1,4 @@
-﻿namespace RemoteBackupsApp.Domain.ViewModels
+﻿namespace RemoteBackupsApp.Domain.ViewModels.Encryption
 {
     public class EncryptionViewModel
     {

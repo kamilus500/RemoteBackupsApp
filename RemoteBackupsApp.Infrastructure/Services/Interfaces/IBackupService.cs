@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
-using RemoteBackupsApp.Domain.ViewModels;
+using RemoteBackupsApp.Domain.ViewModels.Backup;
 
 namespace RemoteBackupsApp.Infrastructure.Services.Interfaces
 {
