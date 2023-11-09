@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.Localization.Routing;
 using Microsoft.AspNetCore.Mvc.Razor;
 using RemoteBackupsApp.Infrastructure.Extensions;
+using RemoteBackupsApp.Infrastructure.Initializers;
 using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,6 +30,11 @@ builder.Services.AddFormOptions();
 
 builder.Services.AddDistributedMemoryCache();
 
+var serviceProvider = builder.Services
+    .BuildServiceProvider();
+
+var databaseContext = serviceProvider.GetRequiredService<DatabaseContext>();
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
@@ -52,5 +57,11 @@ app.UseRequestLocalization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Backup}/{action=Index}");
+
+var seeder = new Seeder(databaseContext);
+if(seeder.IsDatatabaseExist() == 0)
+{
+    seeder.CreateDatabase();
+}
 
 app.Run();
