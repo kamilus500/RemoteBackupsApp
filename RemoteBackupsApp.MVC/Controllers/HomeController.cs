@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc;
 using RemoteBackupsApp.MVC.Models;
 using System.Diagnostics;
 
@@ -18,9 +19,15 @@ namespace RemoteBackupsApp.MVC.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
+        public IActionResult ChangeCulture(string culture)
         {
-            return View();
+            Response.Cookies.Append(
+                CookieRequestCultureProvider.DefaultCookieName,
+                CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)),
+                new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) }
+            );
+
+            return RedirectToAction("Index", "Backup");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

@@ -1,7 +1,4 @@
 ﻿@using RemoteBackupsApp.Domain.ViewModels.User;
-@using RemoteBackupsApp.Infrastructure.Services.Interfaces;
-@inject IUserContext userContext;
-
 @{
     string userName = string.Empty;
     bool isLogIn = await userContext.IsUserLogIn();
@@ -14,33 +11,36 @@
 }
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - RemoteBackupsApp.MVC</title>
+    <title>@ViewData["Title"] - Remote Backups</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/RemoteBackupsApp.MVC.styles.css" asp-append-version="true" />
     <link rel="manifest" href="/manifest.json">
 </head>
 <body>
+    <div class="lang-section">
+        <a asp-controller="Home" asp-action="ChangeCulture" asp-route-culture="en-US" class="btn btn-secondary btn-sm">EN</a>
+        <a asp-controller="Home" asp-action="ChangeCulture" asp-route-culture="pl-PL" class="btn btn-secondary btn-sm">PL</a>
+    </div>
     <div class="account-section">
         @if (isLogIn)
         {
-            <span style="font-size: 1.5rem; font-weight: 600">Welcome @userName !!!</span>
-            <a asp-controller="Auth" asp-action="LogOut" asp-route-userName="@userName" class="btn btn-primary ms-2">Wyloguj</a>
+            <span style="font-size: 1.5rem; font-weight: 600">@Localizer["WelcomeMessage"] @userName !!!</span>
+            <a asp-controller="Auth" asp-action="LogOut" asp-route-userName="@userName" class="btn btn-primary ms-2">@Localizer["LogOut"]</a>
         }
         else
         {
-            <a id="register-button" data-bs-toggle="modal" data-bs-target="#registerLoginModal" class="btn btn-primary">Register</a>
-            <a id="login-button" data-bs-toggle="modal" data-bs-target="#registerLoginModal" class="btn btn-primary">Login</a>
+            <a id="register-button" data-bs-toggle="modal" data-bs-target="#registerLoginModal" class="btn btn-primary">@Localizer["Register"]</a>
+            <a id="login-button" data-bs-toggle="modal" data-bs-target="#registerLoginModal" class="btn btn-primary">@Localizer["Login"]</a>
         }
     </div>
     <div class="container">
         @RenderBody()
     </div>
-
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

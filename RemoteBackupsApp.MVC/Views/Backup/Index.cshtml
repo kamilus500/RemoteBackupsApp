@@ -1,6 +1,4 @@
-﻿@using RemoteBackupsApp.Infrastructure.Services.Interfaces;
-@model IEnumerable<RemoteBackupsApp.Domain.ViewModels.Backup.BackupViewModel>
-@inject IUserContext userContext;
+﻿@model IEnumerable<RemoteBackupsApp.Domain.ViewModels.Backup.BackupViewModel>
 
 @{
     ViewData["Title"] = "Index";
@@ -9,7 +7,7 @@
 
 @if (isLogIn)
 {
-    <a id="create-backup-button" data-bs-toggle="modal" data-bs-target="#createBackupModal" class="btn btn-primary">Create backup</a>
+    <a id="create-backup-button" data-bs-toggle="modal" data-bs-target="#createBackupModal" class="btn btn-primary">@Localizer["CreateMessage"]</a>
 }
 
 @if (Model.Count() > 0 && isLogIn)
@@ -41,11 +39,11 @@
 }
 else if (!isLogIn)
 {
-    <h3 class="text-center">Aby zobaczyc swoje backupy musisz najpiew byc zalogowanym</h3>
+    <h3 class="text-center">@Localizer["MessageForNotLogin"]</h3>
 }
 else
 {
-    <h3 class="text-center">Empty backups</h3>
+    <h3 class="text-center">@Localizer["EmptyBackupsMessage"]</h3>
 }
 
 
@@ -53,7 +51,7 @@ else
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Upload backup</h1>
+                <h1 class="modal-title fs-5" id="exampleModalLabel">@Localizer["UploadMessage"]</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
