@@ -28,8 +28,8 @@
     <div class="account-section">
         @if (isLogIn)
         {
-            <span style="font-size: 1.5rem;">Welcome @userName !!!</span>
-            <a asp-controller="Auth" asp-action="LogOut" asp-route-userName="@userName" class="btn btn-primary">Wyloguj</a>
+            <span style="font-size: 1.5rem; font-weight: 600">Welcome @userName !!!</span>
+            <a asp-controller="Auth" asp-action="LogOut" asp-route-userName="@userName" class="btn btn-primary ms-2">Wyloguj</a>
         }
         else
         {
