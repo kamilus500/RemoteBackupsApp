@@ -11,6 +11,7 @@ namespace RemoteBackupsApp.Infrastructure.Services
     {
         private readonly IDbConnection _dbContext;
         private readonly ISession _session;
+
         public UserContext(DatabaseContext databaseContext, IHttpContextAccessor httpContextAccessor)
         {
             _dbContext = databaseContext.CreateConnection();

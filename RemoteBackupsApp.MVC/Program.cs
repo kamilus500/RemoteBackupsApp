@@ -6,6 +6,8 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddInfrastructure();
 builder.Services.AddFormOptions();
 
+builder.Services.AddDistributedMemoryCache();
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())

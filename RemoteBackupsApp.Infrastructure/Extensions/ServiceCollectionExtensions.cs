@@ -19,10 +19,10 @@ namespace RemoteBackupsApp.Infrastructure.Extensions
             services.AddTransient<IAuthenticationService, AuthenticationService>();
             services.AddTransient<IUserContext, UserContext>();
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
-
+            
             services.AddSession(options =>
             {
-                options.IdleTimeout = TimeSpan.FromMinutes(10);
+                options.IdleTimeout = TimeSpan.FromMinutes(120);
             });
         }
 
