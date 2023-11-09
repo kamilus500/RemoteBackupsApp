@@ -28,13 +28,13 @@
     <div class="account-section">
         @if (isLogIn)
         {
-            <h3>Welcome @userName !!!</h3>
+            <span style="font-size: 1.5rem;">Welcome @userName !!!</span>
             <a asp-controller="Auth" asp-action="LogOut" asp-route-userName="@userName" class="btn btn-primary">Wyloguj</a>
         }
         else
         {
-            <a asp-controller="Auth" asp-action="Register" class="btn btn-primary">Rejestracja</a>
-            <a asp-controller="Auth" asp-action="Login" class="btn btn-primary">Logowanie</a>
+            <a id="register-button" data-bs-toggle="modal" data-bs-target="#registerLoginModal" class="btn btn-primary">Register</a>
+            <a id="login-button" data-bs-toggle="modal" data-bs-target="#registerLoginModal" class="btn btn-primary">Login</a>
         }
     </div>
     <div class="container">

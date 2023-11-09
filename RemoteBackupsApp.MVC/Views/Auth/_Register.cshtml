@@ -1,12 +1,15 @@
-﻿@model RemoteBackupsApp.Domain.ViewModels.Authentication.LoginViewModel
+﻿@model RemoteBackupsApp.Domain.ViewModels.Authentication.RegisterViewModel
 
+<h3 class="text-center">Rejestracja</h3>
 
-<h3>Logowanie</h3>
-
-<form method="POST" asp-controller="Auth" asp-action="Login">
+<form method="POST" asp-controller="Auth" asp-action="Register">
     <div class="mb-3">
         <label for="UserName" class="form-label">Nazwa użytkownika</label>
         <input type="text" class="form-control" name="UserName" placeholder="Wprowadź nazwę użytkownika" required>
+    </div>
+    <div class="mb-3">
+        <label for="Email" class="form-label">Adres email</label>
+        <input type="email" class="form-control" name="Email" placeholder="Wprowadź adres email" required>
     </div>
     <div class="mb-3">
         <label for="Password" class="form-label">Hasło</label>

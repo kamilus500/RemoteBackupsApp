@@ -13,7 +13,7 @@ namespace RemoteBackupsApp.MVC.Controllers
         }
 
         public IActionResult Login()
-            => View();
+            => PartialView("~/Views/Auth/_Login.cshtml");
 
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel loginViewModel)
@@ -26,7 +26,7 @@ namespace RemoteBackupsApp.MVC.Controllers
         }
 
         public IActionResult Register()
-            => View();
+            => PartialView("~/Views/Auth/_Register.cshtml");
 
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel registerViewModel)
