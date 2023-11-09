@@ -5,7 +5,6 @@ using RemoteBackupsApp.Domain.ViewModels.Encryption;
 using RemoteBackupsApp.Infrastructure.Initializers;
 using RemoteBackupsApp.Infrastructure.Services.Interfaces;
 using System.Data;
-using System.Text;
 
 namespace RemoteBackupsApp.Infrastructure.Services
 {
@@ -88,6 +87,20 @@ namespace RemoteBackupsApp.Infrastructure.Services
         }
 
         public async Task<IEnumerable<BackupViewModel>> GetBackups()
-            => await _dbContext.QueryAsync<BackupViewModel>("SELECT Id, BackupName, CreationDate, Size FROM BackupTable WHERE IsDeleted = 0");
+        {
+            var isLogin = await _userContext.IsUserLogIn();
+
+            if (!isLogin)
+                return new List<BackupViewModel>();
+
+            var user = await _userContext.GetUser();
+
+            var parameter = new
+            {
+                UserId = user.Id
+            };
+
+            return await _dbContext.QueryAsync<BackupViewModel>("SELECT Id, BackupName, CreationDate, Size FROM BackupTable WHERE UserId = @UserId AND IsDeleted = 0", parameter);
+        }
     }
 }
