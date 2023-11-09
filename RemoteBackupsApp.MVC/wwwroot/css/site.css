@@ -32,3 +32,12 @@ html, body {
     margin: 0 auto;
     text-align: center;
 }
+
+.lang-section {
+    height: 3rem;
+}
+
+.lang-section a {
+    margin-top: 0.5rem;
+    margin-left: 0.5rem;
+}

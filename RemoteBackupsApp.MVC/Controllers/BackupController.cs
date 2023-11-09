@@ -22,6 +22,7 @@ namespace RemoteBackupsApp.MVC.Controllers
 
         public ActionResult Create()
         {
+
             return PartialView("~/Views/Backup/_CreateBackupModal.cshtml");
         }
 

@@ -1,15 +1,15 @@
 ﻿@model RemoteBackupsApp.Domain.ViewModels.Authentication.LoginViewModel
 
-<h3 class="text-center">Logowanie</h3>
+<h3 class="text-center">@Localizer["LoginInformation"]</h3>
 
 <form method="POST" asp-controller="Auth" asp-action="Login">
     <div class="mb-3">
-        <label for="UserName" class="form-label">Nazwa użytkownika</label>
-        <input type="text" class="form-control" name="UserName" placeholder="Wprowadź nazwę użytkownika" required>
+        <label for="UserName" class="form-label">@Localizer["UserName"]</label>
+        <input type="text" class="form-control" name="UserName" placeholder="@Localizer["UserNamePlaceholder"]" required>
     </div>
     <div class="mb-3">
-        <label for="Password" class="form-label">Hasło</label>
-        <input type="Password" class="form-control" name="Password" placeholder="Wprowadź hasło" required>
+        <label for="Password" class="form-label">@Localizer["Password"]</label>
+        <input type="Password" class="form-control" name="Password" placeholder="@Localizer["PasswordPlaceholder"]" required>
     </div>
-    <button type="submit" class="btn btn-primary">Zaloguj się</button>
+    <button type="submit" class="btn btn-primary text-center">Zaloguj się</button>
 </form>
