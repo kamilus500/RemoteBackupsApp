@@ -5,6 +5,7 @@ using RemoteBackupsApp.Infrastructure.Initializers;
 using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
+var configuration = builder.Configuration;
 
 builder.Services.AddLocalization(o => { o.ResourcesPath = "Resources"; });
 
@@ -25,7 +26,7 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     options.SupportedUICultures = supportedCultures;
 });
 
-builder.Services.AddInfrastructure();
+builder.Services.AddInfrastructure(configuration);
 builder.Services.AddFormOptions();
 
 builder.Services.AddDistributedMemoryCache();

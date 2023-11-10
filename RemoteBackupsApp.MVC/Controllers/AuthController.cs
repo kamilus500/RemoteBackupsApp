@@ -7,9 +7,11 @@ namespace RemoteBackupsApp.MVC.Controllers
     public class AuthController : Controller
     {
         private readonly IAuthenticationService _authenticationService;
-        public AuthController(IAuthenticationService authenticationService)
+        private readonly IEmailService _emailService;
+        public AuthController(IAuthenticationService authenticationService, IEmailService emailService)
         {
             _authenticationService = authenticationService;
+            _emailService = emailService;
         }
 
         public IActionResult Login()
@@ -33,6 +35,8 @@ namespace RemoteBackupsApp.MVC.Controllers
         {
             var registerResponse = await _authenticationService.Register(registerViewModel);
 
+            await _emailService.Send(registerViewModel.Email, "Rejestracja", "Gratulacje, pomyślnie zostało dodane konto do bazy");
+
             if (registerResponse)
             {
                 await _authenticationService.Login(new LoginViewModel()
@@ -40,6 +44,8 @@ namespace RemoteBackupsApp.MVC.Controllers
                     UserName = registerViewModel.UserName,
                     Password = registerViewModel.Password
                 });
+
+
 
                 return RedirectToAction("Index", "Backup"); ;
             }
