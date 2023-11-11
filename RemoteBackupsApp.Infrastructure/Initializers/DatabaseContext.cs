@@ -15,7 +15,12 @@ namespace RemoteBackupsApp.Infrastructure.Initializers
 
         public IDbConnection CreateConnection()
         {
-            return new SqlConnection(connectionString: Configuration.GetConnectionString("conString"));
+            return new SqlConnection(connectionString: 
+                JoinDatabaseToConnectionString(Configuration.GetConnectionString("conString"))
+                );
         }
+
+        private string JoinDatabaseToConnectionString(string connectionString)
+            => connectionString += "Database=RemoteBackupDb;";
     }
 }

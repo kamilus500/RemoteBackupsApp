@@ -59,7 +59,7 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Backup}/{action=Index}");
 
-var seeder = new Seeder(databaseContext);
+var seeder = new Seeder(configuration);
 if(seeder.IsDatatabaseExist() == 0)
 {
     seeder.CreateDatabase();
