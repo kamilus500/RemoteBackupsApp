@@ -102,3 +102,8 @@ FROM dbo.BackupTable
 SELECT EncryptedData, ContentType, BackupName
 FROM BackupTable
 
+update UserTable
+set IsLogin = 0
+where UserName = 'kamil321'
+
+
