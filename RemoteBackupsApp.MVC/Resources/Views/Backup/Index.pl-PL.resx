@@ -124,7 +124,7 @@
     <value>Nie ma żadnej kopii zapasowej</value>
   </data>
   <data name="MessageForNotLogin" xml:space="preserve">
-    <value>Aby zobaczyc swoje kopie zapasowe należy się najpier zalogować</value>
+    <value>Aby zobaczyc swoje kopie zapasowe należy się najpierw zalogować</value>
   </data>
   <data name="UploadMessage" xml:space="preserve">
     <value>Wgraj plik</value>
