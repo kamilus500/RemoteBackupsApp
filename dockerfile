@@ -30,7 +30,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS runtime
 WORKDIR /app
 COPY --from=publish /app/publish .
 
-EXPOSE 3000
+EXPOSE 80
 
 # Uruchom aplikację
 ENTRYPOINT ["dotnet", "RemoteBackupsApp.MVC.dll"]
