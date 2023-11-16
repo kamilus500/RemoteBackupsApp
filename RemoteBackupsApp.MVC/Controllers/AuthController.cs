@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RemoteBackupsApp.Domain.ViewModels.Authentication;
+using RemoteBackupsApp.Infrastructure.Helpers;
 using RemoteBackupsApp.Infrastructure.Services.Interfaces;
 
 namespace RemoteBackupsApp.MVC.Controllers
@@ -35,7 +36,7 @@ namespace RemoteBackupsApp.MVC.Controllers
         {
             var registerResponse = await _authenticationService.Register(registerViewModel);
 
-            await _emailService.Send(registerViewModel.Email, "Rejestracja", "Gratulacje, pomyślnie zostało dodane konto do bazy");
+            await _emailService.Send(registerViewModel.Email, "Pomyślna rejestracja", EmailContents.ConfirmationMessage);
 
             if (registerResponse)
             {
@@ -44,8 +45,6 @@ namespace RemoteBackupsApp.MVC.Controllers
                     UserName = registerViewModel.UserName,
                     Password = registerViewModel.Password
                 });
-
-
 
                 return RedirectToAction("Index", "Backup"); ;
             }
