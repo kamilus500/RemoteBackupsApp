@@ -21,7 +21,6 @@ namespace RemoteBackupsApp.Infrastructure.Initializers
         {
             try
             {
-
                 _dbContext.Execute(DbQueries.DbCreateQuery);
 
                 //Edit connectionString after create database

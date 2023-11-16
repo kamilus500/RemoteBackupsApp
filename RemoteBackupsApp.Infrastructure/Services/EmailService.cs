@@ -37,6 +37,7 @@ namespace RemoteBackupsApp.Infrastructure.Services
             mail.Subject = subject;
             mail.BodyEncoding = System.Text.Encoding.UTF8;
             mail.SubjectEncoding = System.Text.Encoding.UTF8;
+            mail.IsBodyHtml = true;
             mail.Body = body;
 
             _smtp = new SmtpClient()
