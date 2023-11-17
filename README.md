@@ -10,7 +10,7 @@ Go to MVC project and find file named appsettings.json.
 
 You can reate image container from dockerfile and run application as docker container.
 
-# How it work ?
+# How it works ?
 
 Architecture of app is simple.
 It has:
