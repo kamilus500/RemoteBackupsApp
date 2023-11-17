@@ -29,7 +29,7 @@ namespace RemoteBackupsApp.UnitTests.Tests
             var file = new FormFile(stream, 0, stream.Length, "sampleFile", "sample.txt")
             {
                 Headers = new HeaderDictionary(),
-                ContentType = "text/plain"
+                ContentType = "application/pdf"
             };
 
             return file;
