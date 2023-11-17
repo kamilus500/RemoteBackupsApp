@@ -93,17 +93,12 @@ BEGIN
 	WHERE UserName = @UserName
 END
 
-SELECT *
-FROM dbo.UserTable
-
-SELECT *
-FROM dbo.BackupTable
-
-SELECT EncryptedData, ContentType, BackupName
-FROM BackupTable
-
-update UserTable
-set IsLogin = 0
-where UserName = 'kamil321'
-
-
+Go
+CREATE OR ALTER PROCEDURE RemoveBackup 
+	@BackupId UNIQUEIDENTIFIER
+AS
+BEGIN
+	UPDATE BackupTable
+	SET IsDeleted = 1
+	WHERE Id = @BackupId
+END
