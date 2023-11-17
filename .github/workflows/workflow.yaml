@@ -3,7 +3,7 @@ name: .NET 7 CI
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   build:
