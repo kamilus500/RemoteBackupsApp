@@ -2,7 +2,7 @@
 
 The title application is for keep user's backups remotely in database. Every backup is encrypted in sha256.
 
-#Set configuration section
+# Set configuration section
 
 Go to MVC project and find file named appsettings.json.
   - Set up smpt settings for sending email.
