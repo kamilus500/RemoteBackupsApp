@@ -1,22 +1,21 @@
 ﻿using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
 using System.Data;
 
 namespace RemoteBackupsApp.Infrastructure.Initializers
 {
     public class DatabaseContext
     {
-        protected readonly IConfiguration Configuration;
+        private string _connectionString;
 
-        public DatabaseContext(IConfiguration configuration)
+        public DatabaseContext(string connectionString)
         {
-            Configuration = configuration;
+            _connectionString = connectionString;
         }
 
         public IDbConnection CreateConnection()
         {
             return new SqlConnection(connectionString: 
-                JoinDatabaseToConnectionString(Configuration.GetConnectionString("conString")));
+                JoinDatabaseToConnectionString(_connectionString));
         }
 
         private string JoinDatabaseToConnectionString(string connectionString)

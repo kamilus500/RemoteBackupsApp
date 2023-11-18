@@ -115,5 +115,14 @@
 	                                                BEGIN
 		                                                SELECT 0
 	                                                END";
+
+        public static string CreateRemoveBackupProcedure = @"CREATE OR ALTER PROCEDURE RemoveBackup 
+	                                                            @BackupId UNIQUEIDENTIFIER
+                                                            AS
+                                                            BEGIN
+	                                                            UPDATE BackupTable
+	                                                            SET IsDeleted = 1
+	                                                            WHERE Id = @BackupId
+                                                            END";
     }
 }

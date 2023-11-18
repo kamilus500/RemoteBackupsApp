@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
+using RemoteBackupsApp.Domain.ViewModels.Backup;
 using RemoteBackupsApp.Infrastructure.Services.Interfaces;
 using RemoteBackupsApp.MVC.Models;
 using System.Diagnostics;
@@ -8,14 +10,27 @@ namespace RemoteBackupsApp.MVC.Controllers
     public class BackupController : Controller
     {
         private readonly IBackupService _backupService;
-        public BackupController(IBackupService backupService)
+        private readonly IMemoryCache _memoryCache;
+
+        public BackupController(IBackupService backupService, IMemoryCache memoryCache)
         {
-            _backupService = backupService;
+            _backupService = backupService ?? throw new ArgumentNullException(nameof(backupService));
+            _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
         }
 
         public async Task<ActionResult> Index()
         {
             var backups = await _backupService.GetBackups();
+
+            if (!_memoryCache.TryGetValue("BackupsIndex", out IEnumerable<BackupViewModel> cachedData))
+            {
+                cachedData = backups;
+                var cacheEntryOptions = new MemoryCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+                };
+                _memoryCache.Set("BackupsIndex", cachedData, cacheEntryOptions);
+            }
 
             return View(backups);
         }
@@ -30,6 +45,9 @@ namespace RemoteBackupsApp.MVC.Controllers
             try
             {
                 await _backupService.CreateBackup(file);
+
+                _memoryCache.Remove("BackupsIndex");
+
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -48,6 +66,8 @@ namespace RemoteBackupsApp.MVC.Controllers
         public async Task<ActionResult> Delete(string backupId)
         {
             await _backupService.DeleteBackup(backupId);
+
+            _memoryCache.Remove("BackupsIndex");
 
             return RedirectToAction(nameof(Index));
         }
