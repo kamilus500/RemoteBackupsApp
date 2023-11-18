@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using RemoteBackupsApp.Domain.ViewModels.Authentication;
+using RemoteBackupsApp.Domain.ViewModels.Backup;
 using RemoteBackupsApp.Infrastructure.Helpers;
 using RemoteBackupsApp.Infrastructure.Services.Interfaces;
 
@@ -9,10 +11,12 @@ namespace RemoteBackupsApp.MVC.Controllers
     {
         private readonly IAuthenticationService _authenticationService;
         private readonly IEmailService _emailService;
-        public AuthController(IAuthenticationService authenticationService, IEmailService emailService)
+        private readonly IMemoryCache _memoryCache;
+        public AuthController(IAuthenticationService authenticationService, IEmailService emailService, IMemoryCache memoryCache)
         {
             _authenticationService = authenticationService;
             _emailService = emailService;
+            _memoryCache = memoryCache;
         }
 
         public IActionResult Login()
@@ -22,6 +26,16 @@ namespace RemoteBackupsApp.MVC.Controllers
         public async Task<IActionResult> Login(LoginViewModel loginViewModel)
         {
             var loginResponse = await _authenticationService.Login(loginViewModel);
+
+            if (!_memoryCache.TryGetValue("LoginResponse", out int cachedData))
+            {
+                cachedData = loginResponse;
+                var cacheEntryOptions = new MemoryCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+                };
+                _memoryCache.Set("LoginResponse", cachedData, cacheEntryOptions);
+            }
 
             //Obsluga przypadkow
 
@@ -55,6 +69,8 @@ namespace RemoteBackupsApp.MVC.Controllers
         public async Task<IActionResult> LogOut(string userName)
         {
             await _authenticationService.LogOut(userName);
+
+            _memoryCache.Remove("LoginResponse");
 
             return RedirectToAction("Index", "Backup");
         }

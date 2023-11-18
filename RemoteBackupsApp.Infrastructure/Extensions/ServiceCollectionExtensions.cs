@@ -14,9 +14,11 @@ namespace RemoteBackupsApp.Infrastructure.Extensions
     {
         public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
+            var databaseContext = new DatabaseContext(configuration.GetConnectionString("conString"));
+
             services.Configure<SmtpSettings>(settings => configuration.GetSection("SmtpSettings").Bind(settings));
 
-            services.AddSingleton<DatabaseContext>();
+            services.AddSingleton(databaseContext);
             services.AddTransient<IBackupService, BackupService>();
             services.AddTransient<IFileService, FileService>();
             services.AddTransient<IEncryptionService, EncryptionService>();
