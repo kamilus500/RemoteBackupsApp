@@ -1,3 +1,5 @@
+using AspNetCoreHero.ToastNotification;
+using AspNetCoreHero.ToastNotification.Extensions;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using RemoteBackupsApp.Infrastructure.Extensions;
@@ -6,6 +8,8 @@ using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
+
+builder.Services.AddNotyf(config => { config.DurationInSeconds = 3; config.IsDismissable = true; config.Position = NotyfPosition.TopRight; });
 
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
@@ -60,6 +64,8 @@ app.UseRequestLocalization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Backup}/{action=Index}");
+
+app.UseNotyf();
 
 var seeder = new Seeder(configuration);
 if(seeder.IsDatatabaseExist() == 0)
