@@ -117,22 +117,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Login" xml:space="preserve">
-    <value>Log In</value>
+  <data name="LoggedUser" xml:space="preserve">
+    <value>User was logged</value>
   </data>
-  <data name="LoginInformation" xml:space="preserve">
-    <value>Log In</value>
+  <data name="NotCorrectPassword" xml:space="preserve">
+    <value>Password is not correct</value>
   </data>
-  <data name="Password" xml:space="preserve">
-    <value>Password</value>
+  <data name="NotExistUser" xml:space="preserve">
+    <value>User with this username is not exist</value>
   </data>
-  <data name="PasswordPlaceholder" xml:space="preserve">
-    <value>Enter your password</value>
+  <data name="SomethingWrong" xml:space="preserve">
+    <value>Something goes wrong</value>
   </data>
-  <data name="UserName" xml:space="preserve">
-    <value>Username</value>
-  </data>
-  <data name="UserNamePlaceholder" xml:space="preserve">
-    <value>Enter your username</value>
+  <data name="SuccessLogin" xml:space="preserve">
+    <value>Login successfully</value>
   </data>
 </root>
