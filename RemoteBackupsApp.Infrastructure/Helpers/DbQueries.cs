@@ -54,49 +54,46 @@
                     END;";
 
         public static string CreateLoginProcedure = @"CREATE OR ALTER PROCEDURE LoginUser
-	                    @UserName NVARCHAR(30),
-	                    @Password NVARCHAR(30)
-                    AS
-                    BEGIN
-	                    DECLARE @StoredPasswordHash VARBINARY(MAX);
-	                    DECLARE @IsLogin BIT;
+	                                                        @UserName NVARCHAR(30),
+	                                                        @Password NVARCHAR(30)
+                                                        AS
+                                                        BEGIN
+	                                                        DECLARE @StoredPasswordHash VARBINARY(MAX);
+	                                                        DECLARE @IsLogin BIT;
 
-                        SELECT @StoredPasswordHash = PasswordHashed
-                        FROM UserTable
-                        WHERE UserName = @Username;
+                                                            SELECT @StoredPasswordHash = PasswordHashed
+                                                            FROM UserTable
+                                                            WHERE UserName = @Username;
 
-	                    SELECT @IsLogin = IsLogin
-	                    FROM UserTable
-	                    WHERE UserName = @UserName;
+	                                                        SELECT @IsLogin = IsLogin
+	                                                        FROM UserTable
+	                                                        WHERE UserName = @UserName;
 
-	                    IF @IsLogin = 1 
-	                    BEGIN
-		                    Print 'Uzytkownik jest juz zalogowany';
-	                    END
-	                    ELSE 
-	                    BEGIN
-		                    IF @StoredPasswordHash IS NOT NULL
-		                    BEGIN
+	                                                        IF @IsLogin = 1 
+	                                                        BEGIN
+		                                                        Print 'Uzytkownik jest juz zalogowany';
+		                                                        RETURN 2;
+	                                                        END
+	                                                        ELSE 
+	                                                        BEGIN
+		                                                        IF @StoredPasswordHash IS NOT NULL
+		                                                        BEGIN
+			                                                        IF @StoredPasswordHash = HASHBYTES('SHA2_512', @Password)
+			                                                        BEGIN
+				                                                        UPDATE UserTable
+				                                                        SET IsLogin = 1
+				                                                        WHERE UserName = @UserName;
 
-			                    IF @StoredPasswordHash = HASHBYTES('SHA2_512', @Password)
-			                    BEGIN
-				                    UPDATE UserTable
-				                    SET IsLogin = 1
-				                    WHERE UserName = @UserName;
-
-				                    SELECT 1 
-			                    END
-			                    ELSE
-			                    BEGIN
-				                    SELECT 0;
-			                    END
-		                    END
-		                    ELSE
-		                    BEGIN
-			                    SELECT -1;
-		                    END
-	                    END
-                    END";
+				                                                        Print 'Uzytkownik zalogowany pomyslnie';
+				                                                        RETURN 1;
+			                                                        END
+			                                                        ELSE
+			                                                        BEGIN
+				                                                        RETURN 0;
+			                                                        END
+		                                                        END
+	                                                        END
+                                                        END";
 
         public static string CreateLogOutProcedure = @"CREATE OR ALTER PROCEDURE LogOut 
 	                    @UserName NVARCHAR(30)

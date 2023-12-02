@@ -22,13 +22,15 @@ namespace RemoteBackupsApp.Infrastructure.Services
         {
             try
             {
-                var parameter = new
-                {
-                    UserName = loginViewModel.UserName,
-                    Password = loginViewModel.Password
-                };
+                var parameters = new DynamicParameters();
 
-                var isLoginSuccess = await _dbContext.ExecuteAsync("LoginUser", parameter, commandType: CommandType.StoredProcedure);
+                parameters.Add("UserName", loginViewModel.UserName);
+                parameters.Add("Password", loginViewModel.Password);
+                parameters.Add("LoginResult", dbType: DbType.Int32, direction: ParameterDirection.ReturnValue);
+
+                await _dbContext.ExecuteAsync("LoginUser", parameters, commandType: CommandType.StoredProcedure);
+
+                var isLoginSuccess = parameters.Get<int>("LoginResult");
 
                 if (isLoginSuccess is 1)
                 {
@@ -37,13 +39,9 @@ namespace RemoteBackupsApp.Infrastructure.Services
 
                 return isLoginSuccess;
             }
-            catch (SqlException ex)
+            catch
             {
-                return 0;
-            }
-            catch (Exception ex)
-            {
-                return 0;
+                return -1;
             }
         }
 

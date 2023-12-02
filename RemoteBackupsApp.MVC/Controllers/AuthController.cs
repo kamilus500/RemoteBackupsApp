@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AspNetCoreHero.ToastNotification.Abstractions;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Localization;
 using RemoteBackupsApp.Domain.ViewModels.Authentication;
-using RemoteBackupsApp.Domain.ViewModels.Backup;
 using RemoteBackupsApp.Infrastructure.Helpers;
 using RemoteBackupsApp.Infrastructure.Services.Interfaces;
 
@@ -12,11 +13,15 @@ namespace RemoteBackupsApp.MVC.Controllers
         private readonly IAuthenticationService _authenticationService;
         private readonly IEmailService _emailService;
         private readonly IMemoryCache _memoryCache;
-        public AuthController(IAuthenticationService authenticationService, IEmailService emailService, IMemoryCache memoryCache)
+        private readonly INotyfService _notyfService;
+        private readonly IStringLocalizer<AuthController> _localizer;
+        public AuthController(IAuthenticationService authenticationService, IEmailService emailService, IMemoryCache memoryCache, INotyfService notyfService, IStringLocalizer<AuthController> localizer)
         {
             _authenticationService = authenticationService;
             _emailService = emailService;
             _memoryCache = memoryCache;
+            _notyfService = notyfService;
+            _localizer = localizer;
         }
 
         public IActionResult Login()
@@ -25,7 +30,7 @@ namespace RemoteBackupsApp.MVC.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel loginViewModel)
         {
-            var loginResponse = await _authenticationService.Login(loginViewModel);
+            int loginResponse = await _authenticationService.Login(loginViewModel);
 
             if (!_memoryCache.TryGetValue("LoginResponse", out int cachedData))
             {
@@ -37,7 +42,23 @@ namespace RemoteBackupsApp.MVC.Controllers
                 _memoryCache.Set("LoginResponse", cachedData, cacheEntryOptions);
             }
 
-            //Obsluga przypadkow
+            switch (loginResponse)
+            {
+                case 0:
+                    _notyfService.Error(_localizer["NotCorrectPassword"].Value);
+                    break;
+                case 1:
+                    _notyfService.Success(_localizer["SuccessLogin"].Value);
+                    break;
+                case 2:
+                    _notyfService.Error(_localizer["LoggedUser"].Value);
+                    break;
+                case 3:
+                    _notyfService.Error(_localizer["NotExistUser"].Value);
+                    break;
+                default:
+                    throw new ArgumentNullException(_localizer["SomethingWrong"].Value);
+            }
 
             return RedirectToAction("Index", "Backup");
         }
@@ -59,6 +80,8 @@ namespace RemoteBackupsApp.MVC.Controllers
                     UserName = registerViewModel.UserName,
                     Password = registerViewModel.Password
                 });
+
+                _notyfService.Error("User was register succesfully");
 
                 return RedirectToAction("Index", "Backup"); ;
             }

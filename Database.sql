@@ -58,28 +58,25 @@ BEGIN
 	IF @IsLogin = 1 
 	BEGIN
 		Print 'Uzytkownik jest juz zalogowany';
+		RETURN 2;
 	END
 	ELSE 
 	BEGIN
 		IF @StoredPasswordHash IS NOT NULL
 		BEGIN
-
 			IF @StoredPasswordHash = HASHBYTES('SHA2_512', @Password)
 			BEGIN
 				UPDATE UserTable
 				SET IsLogin = 1
 				WHERE UserName = @UserName;
 
-				SELECT 1 
+				Print 'Uzytkownik zalogowany pomyslnie';
+				RETURN 1;
 			END
 			ELSE
 			BEGIN
-				SELECT 0;
+				RETURN 0;
 			END
-		END
-		ELSE
-		BEGIN
-			SELECT -1;
 		END
 	END
 END
@@ -102,3 +99,9 @@ BEGIN
 	SET IsDeleted = 1
 	WHERE Id = @BackupId
 END
+
+exec LoginUser @UserName=N'kamilus500',@Password=N'qwe321'
+
+update dbo.UserTable
+set IsLogin = 0
+where UserName = 'kamilus500'
