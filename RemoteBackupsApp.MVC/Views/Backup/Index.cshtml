@@ -19,7 +19,9 @@
                 <div class="card-body">
                     <h4 class="card-title">@backup.BackupName</h4>
                     <p class="card-subtitle">@backup.CreationDate</p>
-                    <p class="card-text">@backup.Size MB</p>
+                    <p class="card-text">
+                        @backup.Size MB/KB
+                    </p>
                 </div>
                 <div class="card-footer">
                     <a asp-action="Download" asp-route-backupId="@backup.Id" class="btn btn-primary">
