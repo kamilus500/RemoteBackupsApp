@@ -81,7 +81,7 @@ namespace RemoteBackupsApp.MVC.Controllers
                     Password = registerViewModel.Password
                 });
 
-                _notyfService.Error("User was register succesfully");
+                _notyfService.Success("User was register succesfully");
 
                 return RedirectToAction("Index", "Backup"); ;
             }
