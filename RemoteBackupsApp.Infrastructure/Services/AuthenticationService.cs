@@ -76,10 +76,6 @@ namespace RemoteBackupsApp.Infrastructure.Services
             {
                 return false;
             }
-            catch (Exception ex)
-            {
-                return false;
-            }
         }
     }
 }

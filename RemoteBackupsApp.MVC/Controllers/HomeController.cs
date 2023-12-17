@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
-using RemoteBackupsApp.MVC.Models;
-using System.Diagnostics;
 
 namespace RemoteBackupsApp.MVC.Controllers
 {
@@ -28,12 +26,6 @@ namespace RemoteBackupsApp.MVC.Controllers
             );
 
             return RedirectToAction("Index", "Backup");
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }

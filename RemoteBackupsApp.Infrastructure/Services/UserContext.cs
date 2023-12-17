@@ -24,7 +24,7 @@ namespace RemoteBackupsApp.Infrastructure.Services
 
             var parameter = new { UserName = actuallyLogUserName };
 
-            var user = await _dbContext.QueryFirstOrDefaultAsync<UserViewModel>("SELECT CAST(Id AS NVARCHAR(36)) AS Id, UserName, Email FROM UserTable WHERE UserName = @UserName", parameter);
+            var user = await _dbContext.QueryFirstOrDefaultAsync<UserViewModel>("SELECT CAST(U.Id AS NVARCHAR(36)) AS Id, U.UserName, U.Email, R.Name AS RoleName FROM UserTable U INNER JOIN RoleTable R ON R.Id= U.RoleId WHERE UserName = @UserName", parameter);
 
             if (user is null)
                 throw new ArgumentNullException(nameof(user));

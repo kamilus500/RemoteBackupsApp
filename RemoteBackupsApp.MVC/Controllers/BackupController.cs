@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using RemoteBackupsApp.Domain.ViewModels.Backup;
+using RemoteBackupsApp.Infrastructure.Attributes;
 using RemoteBackupsApp.Infrastructure.Services.Interfaces;
 using RemoteBackupsApp.MVC.Models;
 using System.Diagnostics;
@@ -11,11 +12,12 @@ namespace RemoteBackupsApp.MVC.Controllers
     {
         private readonly IBackupService _backupService;
         private readonly IMemoryCache _memoryCache;
-
-        public BackupController(IBackupService backupService, IMemoryCache memoryCache)
+        private readonly IUserContext _userContext;
+        public BackupController(IBackupService backupService, IMemoryCache memoryCache, IUserContext userContext)
         {
             _backupService = backupService ?? throw new ArgumentNullException(nameof(backupService));
             _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
+            _userContext = userContext ?? throw new ArgumentNullException(nameof(userContext));
         }
 
         public async Task<ActionResult> Index()
@@ -63,6 +65,7 @@ namespace RemoteBackupsApp.MVC.Controllers
             return File(uploadFileViewModel.EncryptedData, uploadFileViewModel.ContentType, fileDownloadName: uploadFileViewModel.BackupName);
         }
 
+        [AdminAuthorize]
         public async Task<ActionResult> Delete(string backupId)
         {
             await _backupService.DeleteBackup(backupId);

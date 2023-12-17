@@ -4,12 +4,23 @@
     {
         public static string DbCreateQuery = @"CREATE DATABASE RemoteBackupDb";
 
+        public static string CreateRoleTableQuery = @"CREATE TABLE RoleTable(
+                    Id INT PRIMARY KEY IDENTITY,
+                    Name varchar(5)
+                    )";
+
+        public static string InsertRoleTableQuery = @"
+                    INSERT INTO RoleTable (Name) Values ('User')
+                    INSERT INTO RoleTable (Name) Values ('Admin')";
+
         public static string CreateUserTableQuery = @"CREATE TABLE UserTable(
                     Id UNIQUEIDENTIFIER PRIMARY KEY,
                     Email NVARCHAR(30) NOT NULL,
                     UserName NVARCHAR(30) NOT NULL,
                     PasswordHashed VARBINARY(MAX) NOT NULL,
-                    IsLogin BIT NOT NULL
+                    IsLogin BIT NOT NULL,
+                    RoleId INT,
+                    FOREIGN KEY (RoleId) REFERENCES RoleTable(Id)
                     )";
 
         public static string CreateBackupTableQuery = @"CREATE TABLE BackupTable(
