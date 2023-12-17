@@ -30,6 +30,10 @@
         @if (isLogIn)
         {
             <span style="font-size: 1.5rem; font-weight: 600">@Localizer["WelcomeMessage"] @userName !!!</span>
+            @if (await userContext.IsInRole("Admin"))
+            {
+                <a class="btn btn-primary ms-2" asp-action="AdminPanel" asp-controller="Auth">Admin Panel</a>
+            }
             <a asp-controller="Auth" asp-action="LogOut" asp-route-userName="@userName" class="btn btn-primary ms-2">@Localizer["LogOut"]</a>
         }
         else

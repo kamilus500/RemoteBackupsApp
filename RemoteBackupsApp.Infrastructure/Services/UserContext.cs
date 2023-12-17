@@ -32,6 +32,20 @@ namespace RemoteBackupsApp.Infrastructure.Services
             return user;
         }
 
+        public async Task<bool> IsInRole(string roleName)
+        {
+            var actuallyLogUserName = _session.GetString("userName");
+
+            if (actuallyLogUserName is null)
+                return false;
+
+            var parameter = new { UserName = actuallyLogUserName };
+
+            var role = await _dbContext.QueryFirstOrDefaultAsync<string>("SELECT R.Name AS RoleName FROM UserTable U INNER JOIN RoleTable R ON R.Id= U.RoleId WHERE UserName = @UserName", parameter);
+
+            return role!.Equals(roleName);
+        }
+
         public async Task<bool> IsUserLogIn()
         {
             var actuallyLogUserName = _session.GetString("userName");

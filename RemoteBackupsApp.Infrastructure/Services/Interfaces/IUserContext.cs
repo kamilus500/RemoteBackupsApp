@@ -6,5 +6,6 @@ namespace RemoteBackupsApp.Infrastructure.Services.Interfaces
     {
         public Task<UserViewModel> GetUser();
         public Task<bool> IsUserLogIn();
+        public Task<bool> IsInRole(string roleName);
     }
 }

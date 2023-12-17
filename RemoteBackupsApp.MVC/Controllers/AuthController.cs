@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 using RemoteBackupsApp.Domain.ViewModels.Authentication;
+using RemoteBackupsApp.Infrastructure.Attributes;
 using RemoteBackupsApp.Infrastructure.Helpers;
 using RemoteBackupsApp.Infrastructure.Services.Interfaces;
 
@@ -96,6 +97,12 @@ namespace RemoteBackupsApp.MVC.Controllers
             _memoryCache.Remove("LoginResponse");
 
             return RedirectToAction("Index", "Backup");
+        }
+
+        [AdminAuthorize]
+        public async Task<IActionResult> AdminPanel()
+        {
+            return View();
         }
     }
 }
