@@ -2,13 +2,15 @@
 
 The title application is for keep user's backups remotely in database. Every backup is encrypted in sha256.
 
+Web app is can use polish and english language
+
 # Set configuration section
 
 Go to MVC project and find file named appsettings.json.
   - Set up smpt settings for sending email.
   - Add connectionString with ';' and the end of string;
 
-You can reate image container from dockerfile and run application as docker container.
+You can create image container from dockerfile and run application as docker container.
 
 # How it works ?
 
@@ -27,5 +29,6 @@ It has:
 
 # What you can do ?
 
-- You can create new account or Login to existing.
+- Create new account or Login to existing.
 - If you're logged you can upload file as backup and download from database.
+- As Admin you can ban every user who has not admin role
