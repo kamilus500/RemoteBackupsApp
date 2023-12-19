@@ -1,1 +1,48 @@
-﻿<h3 class="text-center">Admin Panel</h3>
+﻿@model IEnumerable<RemoteBackupsApp.Domain.ViewModels.User.UserViewModel>
+
+<h2 class="text-center">Admin Panel</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.UserName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RoleName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsBanned)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Email)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RoleName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IsBanned)
+                </td>
+                <td>
+                    @if (!item.IsBanned)
+                    {
+                        @Html.ActionLink("Ban User", "BanUser", new { userName = item.UserName })
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

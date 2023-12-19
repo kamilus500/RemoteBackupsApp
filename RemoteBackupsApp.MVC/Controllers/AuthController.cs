@@ -16,13 +16,15 @@ namespace RemoteBackupsApp.MVC.Controllers
         private readonly IMemoryCache _memoryCache;
         private readonly INotyfService _notyfService;
         private readonly IStringLocalizer<AuthController> _localizer;
-        public AuthController(IAuthenticationService authenticationService, IEmailService emailService, IMemoryCache memoryCache, INotyfService notyfService, IStringLocalizer<AuthController> localizer)
+        private readonly IUserContext _userContext;
+        public AuthController(IAuthenticationService authenticationService, IEmailService emailService, IMemoryCache memoryCache, INotyfService notyfService, IStringLocalizer<AuthController> localizer, IUserContext userContext)
         {
             _authenticationService = authenticationService;
             _emailService = emailService;
             _memoryCache = memoryCache;
             _notyfService = notyfService;
             _localizer = localizer;
+            _userContext = userContext;
         }
 
         public IActionResult Login()
@@ -102,7 +104,17 @@ namespace RemoteBackupsApp.MVC.Controllers
         [AdminAuthorize]
         public async Task<IActionResult> AdminPanel()
         {
-            return View();
+            var users = await _userContext.GetAllUsers();
+
+            return View(users);
+        }
+
+        [AdminAuthorize]
+        public async Task<IActionResult> BanUser(string userName)
+        {
+            await _userContext.BanUser(userName);
+
+            return RedirectToAction(nameof(AdminPanel));
         }
     }
 }

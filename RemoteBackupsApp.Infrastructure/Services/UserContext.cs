@@ -18,6 +18,19 @@ namespace RemoteBackupsApp.Infrastructure.Services
             _session = httpContextAccessor.HttpContext.Session;
         }
 
+        public async Task BanUser(string userName)
+        {
+            var parameter = new
+            {
+                UserName = userName
+            };
+
+            await _dbContext.ExecuteAsync("BanUser", parameter, commandType: CommandType.StoredProcedure);
+        }
+
+        public async Task<IEnumerable<UserViewModel>> GetAllUsers()
+            => await _dbContext.QueryAsync<UserViewModel>("SELECT CAST(U.Id AS NVARCHAR(36)) AS Id, U.UserName, U.Email, R.Name AS RoleName, U.IsBan AS IsBanned FROM UserTable U INNER JOIN RoleTable R ON R.Id= U.RoleId WHERE RoleId = 1");
+
         public async Task<UserViewModel> GetUser()
         {
             var actuallyLogUserName = _session.GetString("userName");

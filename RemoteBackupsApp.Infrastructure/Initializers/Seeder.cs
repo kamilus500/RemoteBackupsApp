@@ -43,6 +43,8 @@ namespace RemoteBackupsApp.Infrastructure.Initializers
                 _dbContext.Execute(DbQueries.CreateLogOutProcedure);
 
                 _dbContext.Execute(DbQueries.CreateRemoveBackupProcedure);
+
+                _dbContext.Execute(DbQueries.CreateBanUserProcedure);
             }
             catch (SqlException ex)
             {

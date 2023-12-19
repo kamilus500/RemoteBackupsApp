@@ -19,6 +19,7 @@
                     UserName NVARCHAR(30) NOT NULL,
                     PasswordHashed VARBINARY(MAX) NOT NULL,
                     IsLogin BIT NOT NULL,
+                    IsBan BIT NOT NULL,
                     RoleId INT,
                     FOREIGN KEY (RoleId) REFERENCES RoleTable(Id)
                     )";
@@ -60,8 +61,8 @@
                         @Password NVARCHAR(20)
                     AS
                     BEGIN
-                        INSERT INTO UserTable (Id, Email, UserName, PasswordHashed, IsLogin)
-                        VALUES (NEWID(), @Email, @UserName, HASHBYTES('SHA2_512', @Password), 0);
+                        INSERT INTO UserTable (Id, Email, UserName, PasswordHashed, IsLogin, IsBan, RoleId)
+                        VALUES (NEWID(), @Email, @UserName, HASHBYTES('SHA2_512', @Password), 0, 0, 1);
                     END;";
 
         public static string CreateLoginProcedure = @"CREATE OR ALTER PROCEDURE LoginUser
@@ -132,5 +133,14 @@
 	                                                            SET IsDeleted = 1
 	                                                            WHERE Id = @BackupId
                                                             END";
+
+        public static string CreateBanUserProcedure = @"CREATE OR ALTER PROCEDURE BanUser
+	                                                        @UserName NVARCHAR(30)
+                                                        AS
+                                                        BEGIN 
+	                                                        UPDATE UserTable
+	                                                        SET IsBan = 1
+	                                                        WHERE UserName = @UserName
+                                                        END";
     }
 }
