@@ -19,12 +19,12 @@ namespace RemoteBackupsApp.MVC.Controllers
         private readonly IUserContext _userContext;
         public AuthController(IAuthenticationService authenticationService, IEmailService emailService, IMemoryCache memoryCache, INotyfService notyfService, IStringLocalizer<AuthController> localizer, IUserContext userContext)
         {
-            _authenticationService = authenticationService;
-            _emailService = emailService;
-            _memoryCache = memoryCache;
-            _notyfService = notyfService;
-            _localizer = localizer;
-            _userContext = userContext;
+            _authenticationService = authenticationService ?? throw new ArgumentNullException(nameof(authenticationService));
+            _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
+            _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
+            _notyfService = notyfService ?? throw new ArgumentNullException(nameof(notyfService));
+            _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
+            _userContext = userContext ?? throw new ArgumentNullException(nameof(userContext));
         }
 
         public IActionResult Login()
