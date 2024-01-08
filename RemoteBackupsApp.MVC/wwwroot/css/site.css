@@ -28,16 +28,14 @@ html, body {
 }
 
 .account-section {
-    padding: 2rem;
-    margin: 0 auto;
+    margin-right: 1rem;
     text-align: center;
 }
 
-.lang-section {
-    height: 3rem;
+.lang-section a {
+    margin-right: 0.5rem;
 }
 
-.lang-section a {
-    margin-top: 0.5rem;
-    margin-left: 0.5rem;
+.navbar {
+    background-color: lightgray;
 }
