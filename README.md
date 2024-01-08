@@ -9,6 +9,7 @@ Web app is can use polish and english language
 Go to MVC project and find file named appsettings.json.
   - Set up smpt settings for sending email.
   - Add connectionString with ';' and the end of string;
+    (example: Data Source=##;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;)
 
 You can create image container from dockerfile and run application as docker container.
 
