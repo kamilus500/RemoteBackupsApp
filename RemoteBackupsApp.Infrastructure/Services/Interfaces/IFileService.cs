@@ -6,5 +6,7 @@ namespace RemoteBackupsApp.Infrastructure.Services.Interfaces
     public interface IFileService
     {
         Task<byte[]> GetFileContent(IFormFile file);
+
+        string ConvertFileSize(long fileSize);
     }
 }

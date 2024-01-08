@@ -5,6 +5,6 @@
         public Guid Id { get; set; }
         public string BackupName { get; set; }
         public DateTime CreationDate { get; set; }
-        public double Size { get; set; }
+        public string Size { get; set; }
     }
 }

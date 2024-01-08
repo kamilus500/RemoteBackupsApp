@@ -30,7 +30,7 @@
                     CreationDate DATETIME NOT NULL,
                     EncryptedData VARBINARY(MAX) NOT NULL,
                     ContentType NVARCHAR(50) NOT NULL,
-                    Size DECIMAL NOT NULL,
+                    Size NVARCHAR(25) NOT NULL,
                     AesKey VARBINARY(MAX) NOT NULL,
                     AesIv VARBINARY(MAX) NOT NULL,
                     IsDeleted BIT NOT NULL,
@@ -43,7 +43,7 @@
                         @CreationDate DATETIME,
                         @EncryptedData VARBINARY(MAX),
 	                    @ContentType NVARCHAR(50),
-	                    @Size DECIMAL,
+	                    @Size NVARCHAR(25),
                         @AesKey VARBINARY(MAX),
                         @AesIv VARBINARY(MAX),
 	                    @UserId UNIQUEIDENTIFIER

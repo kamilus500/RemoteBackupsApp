@@ -14,8 +14,7 @@ namespace RemoteBackupsApp.Infrastructure.Initializers
 
         public IDbConnection CreateConnection()
         {
-            return new SqlConnection(connectionString: 
-                JoinDatabaseToConnectionString(_connectionString));
+            return new SqlConnection(connectionString: JoinDatabaseToConnectionString(_connectionString));
         }
 
         private string JoinDatabaseToConnectionString(string connectionString)

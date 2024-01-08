@@ -31,7 +31,7 @@ namespace RemoteBackupsApp.Infrastructure.Services
 
             var encryptedData = _encryptionService.Encrypt(content);
 
-            var fileSize = (double)file.Length / (1024 * 1024);
+            string fileSize = _fileService.ConvertFileSize(file.Length);
 
             var parameters = new
             {
@@ -41,7 +41,7 @@ namespace RemoteBackupsApp.Infrastructure.Services
                 ContentType = file.ContentType.ToString(),
                 AesKey = encryptedData.AesKey,
                 AesIv = encryptedData.AesIv,
-                Size = Math.Round(fileSize, 2),
+                Size = fileSize,
                 UserId = Guid.Parse(user.Id)
             };
 
