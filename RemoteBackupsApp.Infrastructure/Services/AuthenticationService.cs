@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Data.SqlClient;
+using RemoteBackupsApp.Domain.Enums;
 using RemoteBackupsApp.Domain.ViewModels.Authentication;
 using RemoteBackupsApp.Infrastructure.Initializers;
 using RemoteBackupsApp.Infrastructure.Services.Interfaces;
@@ -18,7 +19,7 @@ namespace RemoteBackupsApp.Infrastructure.Services
             _session = httpContextAccessor.HttpContext.Session; 
         }
 
-        public async Task<int> Login(LoginViewModel loginViewModel)
+        public async Task<LoginResponseEnum> Login(LoginViewModel loginViewModel)
         {
             try
             {
@@ -30,9 +31,9 @@ namespace RemoteBackupsApp.Infrastructure.Services
 
                 await _dbContext.ExecuteAsync("LoginUser", parameters, commandType: CommandType.StoredProcedure);
 
-                var isLoginSuccess = parameters.Get<int>("LoginResult");
+                LoginResponseEnum isLoginSuccess = parameters.Get<LoginResponseEnum>("LoginResult");
 
-                if (isLoginSuccess is 1)
+                if (isLoginSuccess is LoginResponseEnum.Success)
                 {
                     _session.SetString("userName", loginViewModel.UserName);
                 }
@@ -41,7 +42,7 @@ namespace RemoteBackupsApp.Infrastructure.Services
             }
             catch
             {
-                return -1;
+                return LoginResponseEnum.Error;
             }
         }
 
