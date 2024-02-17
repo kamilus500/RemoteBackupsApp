@@ -27,6 +27,7 @@ It has:
 - Jquery
 - Sql Server
 - Dapper
+- Hangfire
 
 # What you can do ?
 
