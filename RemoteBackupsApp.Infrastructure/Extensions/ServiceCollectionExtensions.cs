@@ -29,6 +29,8 @@ namespace RemoteBackupsApp.Infrastructure.Extensions
             services.AddTransient<IEmailService, EmailService>();
             services.AddTransient<IFileProcessingService, FileProcessingService>();
 
+            services.AddSignalR();
+
             services.AddHangfire(config => config.UseSqlServerStorage(configuration.GetConnectionString("conString")+"Database = RemoteBackupDb"));
 
             services.AddHangfireServer();

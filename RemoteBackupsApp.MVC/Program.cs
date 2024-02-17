@@ -3,6 +3,7 @@ using AspNetCoreHero.ToastNotification.Extensions;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using RemoteBackupsApp.Infrastructure.Extensions;
+using RemoteBackupsApp.Infrastructure.Hubs;
 using RemoteBackupsApp.Infrastructure.Initializers;
 using System.Globalization;
 
@@ -71,5 +72,10 @@ if(seeder.IsDatatabaseExist() == 0)
 {
     seeder.CreateDatabase();
 }
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapHub<NotyfyCompleteTaskHub>("/notyfyComplete");
+});
 
 app.Run();

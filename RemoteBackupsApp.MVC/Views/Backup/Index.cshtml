@@ -73,3 +73,19 @@ else
         </div>
     </div>
 </div>
+
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+
+<script type="text/javascript">
+    let connection = new signalR.HubConnectionBuilder().withUrl("/notyfyComplete").build();
+
+    connection.start().then(function () {
+        console.log("SignalR connection established.");
+    }).catch(function (err) {
+        return console.error(err.toString());
+    });
+
+    connection.on("JobCompleted", function () {        
+        location.reload();
+    });
+</script>
