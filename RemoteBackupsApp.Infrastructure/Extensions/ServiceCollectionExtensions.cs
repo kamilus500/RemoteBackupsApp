@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Hangfire;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
@@ -26,10 +27,15 @@ namespace RemoteBackupsApp.Infrastructure.Extensions
             services.AddTransient<IUserContext, UserContext>();
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IEmailService, EmailService>();
+            services.AddTransient<IFileProcessingService, FileProcessingService>();
+
+            services.AddHangfire(config => config.UseSqlServerStorage(configuration.GetConnectionString("conString")+"Database = RemoteBackupDb"));
+
+            services.AddHangfireServer();
 
             services.AddSession(options =>
             {
-                options.IdleTimeout = TimeSpan.FromMinutes(120);
+                options.IdleTimeout = TimeSpan.FromMinutes(12);
             });
         }
 
@@ -38,13 +44,10 @@ namespace RemoteBackupsApp.Infrastructure.Extensions
             services.Configure<FormOptions>(o =>
             {
                 o.ValueLengthLimit = int.MaxValue;
-                o.MultipartBodyLengthLimit = 4L * 1024L * 1024L * 1024L;
-                o.MultipartBoundaryLengthLimit = int.MaxValue;
-                o.MultipartHeadersCountLimit = int.MaxValue;
-                o.MultipartHeadersLengthLimit = int.MaxValue;
-                o.BufferBodyLengthLimit = 4L * 1024L * 1024L * 1024L;
+                o.MultipartBodyLengthLimit = 1024 * 1024 * 20;
+                o.BufferBodyLengthLimit = 1024*1024*20;
                 o.BufferBody = true;
-                o.ValueCountLimit = int.MaxValue;
+                o.ValueCountLimit = 10;
             });
 
             services.Configure<KestrelServerOptions>(options =>

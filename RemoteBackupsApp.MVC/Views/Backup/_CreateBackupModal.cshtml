@@ -2,12 +2,48 @@
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="form-group">
         <label for="file" class="form-label">@Localizer["SelectFile"]</label>
-        <input class="form-control" type="file" id="file" name="file"/>
+        <input class="form-control" type="file" id="fileInput" name="file"/>
     </div>
     <div class="form-group text-center mt-2">
-        <input type="submit" value="@Localizer["Create"]" class="btn btn-primary" />
+        <input type="submit" value="@Localizer["Create"]" class="btn btn-primary"/>
     </div>
 </form>
+
+<div class="modal fade" id="fileSizeErrorModal" tabindex="-1" role="dialog" aria-labelledby="fileSizeErrorModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"></h5>
+            </div>
+            <div class="modal-body">
+                <p>@Localizer["SizeFileMessage"]</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="modalCloseBtn">@Localizer["Close"]</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#fileInput').change(function () {
+            let fileInput = $('#fileInput')[0].files[0];
+            if (fileInput) {
+                var fileSize = fileInput.size;
+                var maxSize = 20 * 1024 * 1024; //20MB
+                if (fileSize > maxSize) {
+                    $('#fileSizeErrorModal').modal('show');
+                    $('#fileInput').val('');
+                }
+            }
+        });
+
+        $('#modalCloseBtn').click(function () {
+            $('#fileSizeErrorModal').modal('hide');
+        });
+    });
+</script>
 
 @section Scripts {
     @{

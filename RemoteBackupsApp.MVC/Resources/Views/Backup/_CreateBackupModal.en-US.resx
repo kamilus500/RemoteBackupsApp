@@ -117,10 +117,16 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
   <data name="Create" xml:space="preserve">
     <value>Create</value>
   </data>
   <data name="SelectFile" xml:space="preserve">
     <value>Select file</value>
+  </data>
+  <data name="SizeFileMessage" xml:space="preserve">
+    <value>Uploaded file is greater than (20MB).</value>
   </data>
 </root>

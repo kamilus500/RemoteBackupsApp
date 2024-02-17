@@ -12,15 +12,22 @@ namespace RemoteBackupsApp.Infrastructure.Services
     {
         private readonly IDbConnection _dbContext;
         private readonly IFileService _fileService;
+        private readonly IFileProcessingService _fileProcessingService;
         private readonly IEncryptionService _encryptionService;
         private readonly IUserContext _userContext;
 
-        public BackupService(DatabaseContext databaseContext, IFileService fileService, IEncryptionService encryptionService, IUserContext userContext)
+        public BackupService(DatabaseContext databaseContext, 
+            IFileService fileService, 
+            IEncryptionService encryptionService,
+            IUserContext userContext,
+            IFileProcessingService fileProcessingService
+        )
         {
             _fileService = fileService;
             _dbContext = databaseContext.CreateConnection();
             _encryptionService = encryptionService;
             _userContext = userContext;
+            _fileProcessingService = fileProcessingService;
         }
 
         public async Task CreateBackup(IFormFile file)
@@ -29,23 +36,16 @@ namespace RemoteBackupsApp.Infrastructure.Services
 
             var content = await _fileService.GetFileContent(file);
 
-            var encryptedData = _encryptionService.Encrypt(content);
-
-            string fileSize = _fileService.ConvertFileSize(file.Length);
-
-            var parameters = new
+            var fileProcessViewModel = new FileProcessViewModel
             {
-                BackupName = $"{file.FileName}",
-                CreationDate = DateTime.Now,
-                EncryptedData = encryptedData.Content,
-                ContentType = file.ContentType.ToString(),
-                AesKey = encryptedData.AesKey,
-                AesIv = encryptedData.AesIv,
-                Size = fileSize,
-                UserId = Guid.Parse(user.Id)
+                FileName = file.FileName,
+                FileLength = content.Length,
+                ContentType = file.ContentType,
+                UserId = user.Id,
+                Content = content
             };
 
-            _dbContext.Execute("CreateBackup", parameters, commandType: CommandType.StoredProcedure);
+            _fileProcessingService.ProcessFile(fileProcessViewModel);
         }
 
         public async Task DeleteBackup(string backupId)
