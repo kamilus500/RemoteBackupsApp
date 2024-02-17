@@ -27,6 +27,7 @@ It has:
 - Sql Server
 - Dapper
 - Hangfire
+- SignalR
 
 # What you can do ?
 
