@@ -2,8 +2,6 @@
 {
     public static class DbQueries
     {
-        public static string DbCreateQuery = @"CREATE DATABASE RemoteBackupDb";
-
         public static string CreateRoleTableQuery = @"CREATE TABLE RoleTable(
                     Id INT PRIMARY KEY IDENTITY,
                     Name varchar(5)
@@ -116,7 +114,7 @@
 	                    WHERE UserName = @UserName
                     END";
 
-        public static string IsDatabaseExistQuery = @"IF EXISTS (SELECT name FROM sys.databases WHERE name = 'RemoteBackupDb')
+        public static string IsDatabaseExistQuery = @"IF EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE')
 	                                                BEGIN
 		                                                SELECT 1
 	                                                END

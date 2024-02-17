@@ -21,11 +21,6 @@ namespace RemoteBackupsApp.Infrastructure.Initializers
         {
             try
             {
-                _dbContext.Execute(DbQueries.DbCreateQuery);
-
-                //Edit connectionString after create database
-                _dbContext.ConnectionString += "Database=RemoteBackupDb";
-
                 _dbContext.Execute(DbQueries.CreateRoleTableQuery);
 
                 _dbContext.Execute(DbQueries.InsertRoleTableQuery);

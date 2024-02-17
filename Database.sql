@@ -1,6 +1,10 @@
-CREATE DATABASE RemoteBackupDb;
+CREATE TABLE RoleTable(
+Id INT PRIMARY KEY IDENTITY,
+Name varchar(5)
+)
 
-USE RemoteBackupDb;
+INSERT INTO RoleTable (Name) Values ('User')
+INSERT INTO RoleTable (Name) Values ('Admin')
 
 CREATE TABLE BackupTable(
 Id UNIQUEIDENTIFIER PRIMARY KEY,
@@ -8,7 +12,7 @@ BackupName NVARCHAR(30) NOT NULL,
 CreationDate DATETIME NOT NULL,
 EncryptedData VARBINARY(MAX) NOT NULL,
 ContentType NVARCHAR(50) NOT NULL,
-Size DECIMAL NOT NULL,
+Size NVARCHAR(25) NOT NULL,
 AesKey VARBINARY(MAX) NOT NULL,
 AesIv VARBINARY(MAX) NOT NULL,
 IsDeleted BIT NOT NULL
@@ -19,10 +23,22 @@ Id UNIQUEIDENTIFIER PRIMARY KEY,
 Email NVARCHAR(30) NOT NULL,
 UserName NVARCHAR(30) NOT NULL,
 PasswordHashed VARBINARY(MAX) NOT NULL,
-IsLogin BIT NOT NULL
+IsLogin BIT NOT NULL,
+RoleId INT,
+FOREIGN KEY (RoleId) REFERENCES RoleTable(Id)
 )
 
 --create procedure
+CREATE OR ALTER PROCEDURE CreateNewUser
+                        @Email NVARCHAR(30),
+                        @UserName NVARCHAR(30),
+                        @Password NVARCHAR(20)
+                    AS
+                    BEGIN
+                        INSERT INTO UserTable (Id, Email, UserName, PasswordHashed, IsLogin, IsBan, RoleId)
+                        VALUES (NEWID(), @Email, @UserName, HASHBYTES('SHA2_512', @Password), 0, 0, 1);
+                    END;
+
 CREATE OR ALTER PROCEDURE CreateBackup
     @BackupName NVARCHAR(30),
     @CreationDate DATETIME,
@@ -46,14 +62,20 @@ AS
 BEGIN
 	DECLARE @StoredPasswordHash VARBINARY(MAX);
 	DECLARE @IsLogin BIT;
+	DECLARE @IsBanned BIT;
 
     SELECT @StoredPasswordHash = PasswordHashed
     FROM UserTable
     WHERE UserName = @Username;
 
-	SELECT @IsLogin = IsLogin
+	SELECT @IsLogin = IsLogin, @IsBanned = IsBan
 	FROM UserTable
 	WHERE UserName = @UserName;
+
+	IF @IsBanned = 1
+	BEGIN 
+		RETURN 3;
+	END
 
 	IF @IsLogin = 1 
 	BEGIN
@@ -100,8 +122,15 @@ BEGIN
 	WHERE Id = @BackupId
 END
 
-exec LoginUser @UserName=N'kamilus500',@Password=N'qwe321'
+CREATE OR ALTER PROCEDURE BanUser
+	@UserName NVARCHAR(30)
+AS
+BEGIN 
+	UPDATE UserTable
+	SET IsBan = 1
+	WHERE UserName = @UserName
+END
 
 update dbo.UserTable
-set IsLogin = 0
+set RoleId = 2
 where UserName = 'kamilus500'
