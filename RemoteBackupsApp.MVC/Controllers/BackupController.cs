@@ -65,7 +65,6 @@ namespace RemoteBackupsApp.MVC.Controllers
             return File(uploadFileViewModel.EncryptedData, uploadFileViewModel.ContentType, fileDownloadName: uploadFileViewModel.BackupName);
         }
 
-        [AdminAuthorize]
         public async Task<ActionResult> Delete(string backupId)
         {
             await _backupService.DeleteBackup(backupId);
