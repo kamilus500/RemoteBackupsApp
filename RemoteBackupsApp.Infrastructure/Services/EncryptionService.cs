@@ -13,16 +13,12 @@ namespace RemoteBackupsApp.Infrastructure.Services
                 aesAlg.Key = key;
                 aesAlg.IV = iv;
 
-                ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
-
+                using (ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV))
                 using (MemoryStream msDecrypt = new MemoryStream())
+                using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Write))
                 {
-                    using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Write))
-                    {
-                        csDecrypt.Write(encryptedFileBytes, 0, encryptedFileBytes.Length);
-                        csDecrypt.FlushFinalBlock();
-                    }
-
+                    csDecrypt.Write(encryptedFileBytes, 0, encryptedFileBytes.Length);
+                    csDecrypt.FlushFinalBlock();
                     return msDecrypt.ToArray();
                 }
             }
@@ -31,24 +27,21 @@ namespace RemoteBackupsApp.Infrastructure.Services
         public EncryptionViewModel Encrypt(byte[] fileBytes)
         {
             using (Aes aesAlg = Aes.Create())
+            using (MemoryStream msEncrypt = new MemoryStream())
+            using (ICryptoTransform encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV))
             {
-                ICryptoTransform encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
-
-                using (MemoryStream msEncrypt = new MemoryStream())
+                using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
                 {
-                    using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
-                    {
-                        csEncrypt.Write(fileBytes, 0, fileBytes.Length);
-                        csEncrypt.FlushFinalBlock();
-                    }
-
-                    return new EncryptionViewModel()
-                    {
-                        Content = msEncrypt.ToArray(),
-                        AesKey = aesAlg.Key,
-                        AesIv = aesAlg.IV
-                    };
+                    csEncrypt.Write(fileBytes, 0, fileBytes.Length);
+                    csEncrypt.FlushFinalBlock();
                 }
+
+                return new EncryptionViewModel()
+                {
+                    Content = msEncrypt.ToArray(),
+                    AesKey = aesAlg.Key,
+                    AesIv = aesAlg.IV
+                };
             }
         }
     }

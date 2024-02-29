@@ -5,11 +5,11 @@ namespace RemoteBackupsApp.Infrastructure.Services
 {
     public class FileService : IFileService
     {
+        const long kilobyte = 1024;
+        const long megabyte = kilobyte * 1024;
+
         public string ConvertFileSize(long fileSize)
         {
-            const long kilobyte = 1024;
-            const long megabyte = kilobyte * 1024;
-
             string fileSizeStr = string.Empty;
 
             if (fileSize < kilobyte)
@@ -18,11 +18,11 @@ namespace RemoteBackupsApp.Infrastructure.Services
             }
             else if (fileSize < megabyte)
             {
-                fileSizeStr = $"{(double)(fileSize / 1024)} KB";
+                fileSizeStr = $"{(double)(fileSize / kilobyte)} KB";
             }
             else
             {
-                var size = (double)fileSize / (1024 * 1024);
+                var size = (double)fileSize / (kilobyte * kilobyte);
                 fileSizeStr = $"{size.ToString("0.##")} MB";
             }
 

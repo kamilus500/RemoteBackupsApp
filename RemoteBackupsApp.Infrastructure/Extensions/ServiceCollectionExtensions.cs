@@ -45,16 +45,7 @@ namespace RemoteBackupsApp.Infrastructure.Extensions
         {
             services.Configure<FormOptions>(o =>
             {
-                o.ValueLengthLimit = int.MaxValue;
                 o.MultipartBodyLengthLimit = 1024 * 1024 * 20;
-                o.BufferBodyLengthLimit = 1024*1024*20;
-                o.BufferBody = true;
-                o.ValueCountLimit = 10;
-            });
-
-            services.Configure<KestrelServerOptions>(options =>
-            {
-                options.Limits.MaxRequestBodySize = Int64.MaxValue;
             });
         }
     }

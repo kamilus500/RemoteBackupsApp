@@ -50,6 +50,8 @@ namespace RemoteBackupsApp.Infrastructure.Services
             _dbContext.Execute("CreateBackup", parameters, commandType: CommandType.StoredProcedure);
 
             _hubContext.Clients.All.SendAsync("JobCompleted");
+
+            GC.Collect();
         }
     }
 }
