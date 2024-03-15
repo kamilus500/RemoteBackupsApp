@@ -9,7 +9,7 @@ namespace RemoteBackupsApp.Infrastructure.Services.Interfaces
         
         public Task<BackupViewModel> GetBackup(string backupId);
 
-        public Task CreateBackup(IFormFile file);
+        public Task CreateBackup(FileProcessViewModel file);
         
         public Task<UploadBackupFileViewModel> DownloadBackup(string id);
 

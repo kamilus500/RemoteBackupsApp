@@ -11,41 +11,32 @@ namespace RemoteBackupsApp.Infrastructure.Services
     public class BackupService : IBackupService
     {
         private readonly IDbConnection _dbContext;
-        private readonly IFileService _fileService;
         private readonly IFileProcessingService _fileProcessingService;
         private readonly IEncryptionService _encryptionService;
         private readonly IUserContext _userContext;
 
-        public BackupService(DatabaseContext databaseContext, 
-            IFileService fileService, 
+        public BackupService(DatabaseContext databaseContext,
             IEncryptionService encryptionService,
             IUserContext userContext,
             IFileProcessingService fileProcessingService
         )
         {
-            _fileService = fileService;
             _dbContext = databaseContext.CreateConnection();
             _encryptionService = encryptionService;
             _userContext = userContext;
             _fileProcessingService = fileProcessingService;
         }
 
-        public async Task CreateBackup(IFormFile file)
+        public async Task CreateBackup(FileProcessViewModel processFileViewModel)
         {
             var user = await _userContext.GetUser();
 
-            var content = await _fileService.GetFileContent(file);
-
-            var fileProcessViewModel = new FileProcessViewModel
+            if (user is not null)
             {
-                FileName = file.FileName,
-                FileLength = content.Length,
-                ContentType = file.ContentType,
-                UserId = user.Id,
-                Content = content
-            };
+                processFileViewModel.UserId = user.Id;
 
-            _fileProcessingService.ProcessFile(fileProcessViewModel);
+                _fileProcessingService.ProcessFile(processFileViewModel);
+            }
         }
 
         public async Task DeleteBackup(string backupId)

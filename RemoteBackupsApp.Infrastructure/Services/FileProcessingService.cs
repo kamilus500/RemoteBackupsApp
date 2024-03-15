@@ -31,25 +31,34 @@ namespace RemoteBackupsApp.Infrastructure.Services
 
         public void AddBackupToDatabase(FileProcessViewModel fileProcessViewModel)
         {
-            var encryptedData = _encryptionService.Encrypt(fileProcessViewModel.Content);
-
-            string fileSize = _fileService.ConvertFileSize(fileProcessViewModel.FileLength);
-
-            var parameters = new
+            using (var fileStream = File.OpenRead(fileProcessViewModel.TempFilePath))
+            using (var memoryStream = new MemoryStream())
+            using (_dbContext)
             {
-                BackupName = $"{fileProcessViewModel.FileName}",
-                CreationDate = DateTime.Now,
-                EncryptedData = encryptedData.Content,
-                ContentType = fileProcessViewModel.ContentType,
-                AesKey = encryptedData.AesKey,
-                AesIv = encryptedData.AesIv,
-                Size = fileSize,
-                UserId = Guid.Parse(fileProcessViewModel.UserId)
-            };
+                fileStream.CopyTo(memoryStream);
 
-            _dbContext.Execute("CreateBackup", parameters, commandType: CommandType.StoredProcedure);
+                var encryptedData = _encryptionService.Encrypt(memoryStream.ToArray());
+
+                var fileSize = _fileService.ConvertFileSize(fileStream.Length);
+
+                var parameters = new
+                {
+                    BackupName = $"{fileProcessViewModel.FileName}",
+                    CreationDate = DateTime.Now,
+                    EncryptedData = encryptedData.Content,
+                    ContentType = fileProcessViewModel.ContentType,
+                    AesKey = encryptedData.AesKey,
+                    AesIv = encryptedData.AesIv,
+                    Size = fileSize,
+                    UserId = Guid.Parse(fileProcessViewModel.UserId)
+                };
+
+                _dbContext.Execute("CreateBackup", parameters, commandType: CommandType.StoredProcedure);
+            }
 
             _hubContext.Clients.All.SendAsync("JobCompleted");
+
+            File.Delete(fileProcessViewModel.TempFilePath);
 
             GC.Collect();
         }

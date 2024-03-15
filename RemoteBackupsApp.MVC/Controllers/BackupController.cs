@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using RemoteBackupsApp.Domain.ViewModels.Backup;
-using RemoteBackupsApp.Infrastructure.Attributes;
 using RemoteBackupsApp.Infrastructure.Services.Interfaces;
 using RemoteBackupsApp.MVC.Models;
 using System.Diagnostics;
@@ -47,9 +46,27 @@ namespace RemoteBackupsApp.MVC.Controllers
         {
             try
             {
-                await _backupService.CreateBackup(file);
+                if (file != null && file.Length > 0)
+                {
+                    var tempFilePath = Path.GetTempFileName();
 
-                _memoryCache.Remove("BackupsIndex");
+                    using (var stream = new FileStream(tempFilePath, FileMode.Create))
+                    {
+                        await file.CopyToAsync(stream);
+                    }
+
+                    var processFileViewModel = new FileProcessViewModel()
+                    {
+                        ContentType = file.ContentType,
+                        FileName = file.FileName,
+                        FileLength = (int)file.Length,
+                        TempFilePath = tempFilePath,
+                    };
+
+                    await _backupService.CreateBackup(processFileViewModel);
+
+                    _memoryCache.Remove("BackupsIndex");
+                }
 
                 return RedirectToAction(nameof(Index));
             }
