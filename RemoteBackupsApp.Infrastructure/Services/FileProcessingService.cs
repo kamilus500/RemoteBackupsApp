@@ -59,8 +59,6 @@ namespace RemoteBackupsApp.Infrastructure.Services
             _hubContext.Clients.All.SendAsync("JobCompleted");
 
             File.Delete(fileProcessViewModel.TempFilePath);
-
-            GC.Collect();
         }
     }
 }

@@ -40,7 +40,7 @@ namespace RemoteBackupsApp.MVC.Controllers
             => PartialView("~/Views/Backup/_CreateBackupModal.cshtml");
 
         [HttpPost]
-        [RequestSizeLimit(1024*1024*20)]
+        [RequestSizeLimit(1024*1024*150)]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(IFormFile file)
         {
@@ -67,6 +67,9 @@ namespace RemoteBackupsApp.MVC.Controllers
 
                     _memoryCache.Remove("BackupsIndex");
                 }
+
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
 
                 return RedirectToAction(nameof(Index));
             }
