@@ -1,6 +1,5 @@
 ﻿using RemoteBackupsApp.Domain.ViewModels.Encryption;
 using RemoteBackupsApp.Infrastructure.Services.Interfaces;
-using System.IO.Pipelines;
 using System.Security.Cryptography;
 
 namespace RemoteBackupsApp.Infrastructure.Services
@@ -20,25 +19,26 @@ namespace RemoteBackupsApp.Infrastructure.Services
                 {
                     csDecrypt.Write(encryptedFileBytes, 0, encryptedFileBytes.Length);
                     csDecrypt.FlushFinalBlock();
-                    byte[] decryptedArray = msDecrypt.ToArray();
-
-                    return decryptedArray;
+                    return msDecrypt.ToArray();
                 }
             }
         }
 
-        public EncryptionViewModel Encrypt(FileStream fileStream)
+        public EncryptionViewModel Encrypt(byte[] fileBytes)
         {
             using (Aes aesAlg = Aes.Create())
+            using (MemoryStream msEncrypt = new MemoryStream())
             using (ICryptoTransform encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV))
-            using (CryptoStream csEncrypt = new CryptoStream(fileStream, encryptor, CryptoStreamMode.Write))
             {
-                byte[] encryptedData = new byte[fileStream.Length];
-                fileStream.Read(encryptedData, 0, encryptedData.Length);
+                using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+                {
+                    csEncrypt.Write(fileBytes, 0, fileBytes.Length);
+                    csEncrypt.FlushFinalBlock();
+                }
 
                 return new EncryptionViewModel()
                 {
-                    Content = encryptedData,
+                    Content = msEncrypt.ToArray(),
                     AesKey = aesAlg.Key,
                     AesIv = aesAlg.IV
                 };
