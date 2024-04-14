@@ -1,7 +1,6 @@
 ﻿using Hangfire;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RemoteBackupsApp.Domain.ViewModels.Configs;
@@ -31,7 +30,7 @@ namespace RemoteBackupsApp.Infrastructure.Extensions
 
             services.AddSignalR();
 
-            services.AddHangfire(config => config.UseSqlServerStorage(configuration.GetConnectionString("conString")+"Database = RemoteBackupDb"));
+            services.AddHangfire(config => config.UseSqlServerStorage(configuration.GetConnectionString("conString")));
 
             services.AddHangfireServer();
 

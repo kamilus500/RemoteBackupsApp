@@ -50,11 +50,6 @@ namespace RemoteBackupsApp.MVC.Controllers
                 {
                     var tempFilePath = Path.GetTempFileName();
 
-                    using (var stream = new FileStream(tempFilePath, FileMode.Create))
-                    {
-                        await file.CopyToAsync(stream);
-                    }
-
                     var processFileViewModel = new FileProcessViewModel()
                     {
                         ContentType = file.ContentType,
@@ -67,9 +62,6 @@ namespace RemoteBackupsApp.MVC.Controllers
 
                     _memoryCache.Remove("BackupsIndex");
                 }
-
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
 
                 return RedirectToAction(nameof(Index));
             }

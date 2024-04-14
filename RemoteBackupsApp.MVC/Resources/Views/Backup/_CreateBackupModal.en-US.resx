@@ -127,6 +127,6 @@
     <value>Select file</value>
   </data>
   <data name="SizeFileMessage" xml:space="preserve">
-    <value>Uploaded file is greater than (20MB).</value>
+    <value>Uploaded file is greater than (150MB).</value>
   </data>
 </root>

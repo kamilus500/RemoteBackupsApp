@@ -127,6 +127,6 @@
     <value>Wybierz plik</value>
   </data>
   <data name="SizeFileMessage" xml:space="preserve">
-    <value>Przesłany plik przekracza maksymalny rozmiar (20 MB).</value>
+    <value>Przesłany plik przekracza maksymalny rozmiar (150 MB).</value>
   </data>
 </root>
