@@ -14,31 +14,30 @@ namespace RemoteBackupsApp.Infrastructure.Services
                 aesAlg.IV = iv;
 
                 using (ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV))
-                using (MemoryStream msDecrypt = new MemoryStream())
-                using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Write))
+                using (MemoryStream msDecrypt = new MemoryStream(encryptedFileBytes))
+                using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
                 {
-                    csDecrypt.Write(encryptedFileBytes, 0, encryptedFileBytes.Length);
-                    csDecrypt.FlushFinalBlock();
                     return msDecrypt.ToArray();
                 }
             }
         }
 
-        public EncryptionViewModel Encrypt(byte[] fileBytes)
+        public EncryptionViewModel Encrypt(string tempPathFile)
         {
+            var fileBytes = File.ReadAllBytes(tempPathFile);
+
             using (Aes aesAlg = Aes.Create())
-            using (MemoryStream msEncrypt = new MemoryStream())
+            using (MemoryStream msEncrypt = new MemoryStream(fileBytes))
             using (ICryptoTransform encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV))
             {
                 using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
                 {
-                    csEncrypt.Write(fileBytes, 0, fileBytes.Length);
-                    csEncrypt.FlushFinalBlock();
+                    fileBytes = msEncrypt.ToArray();
                 }
 
                 return new EncryptionViewModel()
                 {
-                    Content = msEncrypt.ToArray(),
+                    Content = fileBytes,
                     AesKey = aesAlg.Key,
                     AesIv = aesAlg.IV
                 };

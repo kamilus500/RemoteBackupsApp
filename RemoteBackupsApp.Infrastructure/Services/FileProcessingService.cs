@@ -31,15 +31,11 @@ namespace RemoteBackupsApp.Infrastructure.Services
 
         public void AddBackupToDatabase(FileProcessViewModel fileProcessViewModel)
         {
-            using (var fileStream = File.OpenRead(fileProcessViewModel.TempFilePath))
-            using (var memoryStream = new MemoryStream())
             using (_dbContext)
             {
-                fileStream.CopyTo(memoryStream);
+                var encryptedData = _encryptionService.Encrypt(fileProcessViewModel.TempFilePath);
 
-                var encryptedData = _encryptionService.Encrypt(memoryStream.ToArray());
-
-                var fileSize = _fileService.ConvertFileSize(fileStream.Length);
+                var fileSize = _fileService.ConvertFileSize(encryptedData.Content.LongLength);
 
                 var parameters = new
                 {

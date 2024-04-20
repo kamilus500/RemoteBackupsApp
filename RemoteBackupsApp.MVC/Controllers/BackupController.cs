@@ -40,7 +40,7 @@ namespace RemoteBackupsApp.MVC.Controllers
             => PartialView("~/Views/Backup/_CreateBackupModal.cshtml");
 
         [HttpPost]
-        [RequestSizeLimit(1024*1024*20)]
+        [RequestSizeLimit(1024*1024*500)]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(IFormFile file)
         {
@@ -60,7 +60,7 @@ namespace RemoteBackupsApp.MVC.Controllers
                         ContentType = file.ContentType,
                         FileName = file.FileName,
                         FileLength = (int)file.Length,
-                        TempFilePath = tempFilePath,
+                        TempFilePath = tempFilePath
                     };
 
                     await _backupService.CreateBackup(processFileViewModel);
@@ -69,7 +69,6 @@ namespace RemoteBackupsApp.MVC.Controllers
                 }
 
                 GC.Collect();
-                GC.WaitForPendingFinalizers();
 
                 return RedirectToAction(nameof(Index));
             }
