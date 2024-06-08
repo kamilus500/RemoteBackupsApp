@@ -21,10 +21,12 @@ namespace RemoteBackupsApp.MVC.Controllers
 
         public async Task<ActionResult> Index()
         {
-            var backups = await _backupService.GetBackups();
+            if (!await _userContext.IsUserLogIn())
+                return View(new List<BackupViewModel>());
 
             if (!_memoryCache.TryGetValue("BackupsIndex", out IEnumerable<BackupViewModel> cachedData))
             {
+                var backups = await _backupService.GetBackups();
                 cachedData = backups;
                 var cacheEntryOptions = new MemoryCacheEntryOptions
                 {
@@ -33,7 +35,7 @@ namespace RemoteBackupsApp.MVC.Controllers
                 _memoryCache.Set("BackupsIndex", cachedData, cacheEntryOptions);
             }
 
-            return View(backups);
+            return View(cachedData);
         }
 
         public ActionResult Create()
