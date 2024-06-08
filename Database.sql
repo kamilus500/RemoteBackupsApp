@@ -6,6 +6,17 @@ Name varchar(5)
 INSERT INTO RoleTable (Name) Values ('User')
 INSERT INTO RoleTable (Name) Values ('Admin')
 
+CREATE TABLE UserTable(
+Id UNIQUEIDENTIFIER PRIMARY KEY,
+Email NVARCHAR(30) NOT NULL,
+UserName NVARCHAR(30) NOT NULL,
+PasswordHashed VARBINARY(MAX) NOT NULL,
+IsLogin BIT NOT NULL,
+IsBan BIT NOT NULL,
+RoleId INT,
+FOREIGN KEY (RoleId) REFERENCES RoleTable(Id)
+)
+
 CREATE TABLE BackupTable(
 Id UNIQUEIDENTIFIER PRIMARY KEY,
 BackupName NVARCHAR(30) NOT NULL,
@@ -15,17 +26,9 @@ ContentType NVARCHAR(50) NOT NULL,
 Size NVARCHAR(25) NOT NULL,
 AesKey VARBINARY(MAX) NOT NULL,
 AesIv VARBINARY(MAX) NOT NULL,
-IsDeleted BIT NOT NULL
-) 
-
-CREATE TABLE UserTable(
-Id UNIQUEIDENTIFIER PRIMARY KEY,
-Email NVARCHAR(30) NOT NULL,
-UserName NVARCHAR(30) NOT NULL,
-PasswordHashed VARBINARY(MAX) NOT NULL,
-IsLogin BIT NOT NULL,
-RoleId INT,
-FOREIGN KEY (RoleId) REFERENCES RoleTable(Id)
+IsDeleted BIT NOT NULL,
+UserId UNIQUEIDENTIFIER NOT NULL,
+FOREIGN KEY (UserId) REFERENCES UserTable(Id)
 )
 
 --create procedure
@@ -40,20 +43,21 @@ CREATE OR ALTER PROCEDURE CreateNewUser
                     END;
 
 CREATE OR ALTER PROCEDURE CreateBackup
-    @BackupName NVARCHAR(30),
-    @CreationDate DATETIME,
-    @EncryptedData VARBINARY(MAX),
-	@ContentType NVARCHAR(50),
-	@Size DECIMAL,
-    @AesKey VARBINARY(MAX),
-    @AesIv VARBINARY(MAX)
-AS
-BEGIN
-    DECLARE @NewId UNIQUEIDENTIFIER = NEWID();
+                        @BackupName NVARCHAR(30),
+                        @CreationDate DATETIME,
+                        @EncryptedData VARBINARY(MAX),
+	                    @ContentType NVARCHAR(50),
+	                    @Size NVARCHAR(25),
+                        @AesKey VARBINARY(MAX),
+                        @AesIv VARBINARY(MAX),
+	                    @UserId UNIQUEIDENTIFIER
+                    AS
+                    BEGIN
+                        DECLARE @NewId UNIQUEIDENTIFIER = NEWID();
 
-    INSERT INTO BackupTable (Id, BackupName, CreationDate, Size, EncryptedData, ContentType, AesKey, AesIv, IsDeleted)
-    VALUES (@NewId, @BackupName, @CreationDate, @Size, @EncryptedData, @ContentType, @AesKey, @AesIv, 0);
-END
+                        INSERT INTO BackupTable (Id, BackupName, CreationDate, Size, EncryptedData, ContentType, AesKey, AesIv, IsDeleted, UserId)
+                        VALUES (@NewId, @BackupName, @CreationDate, @Size, @EncryptedData, @ContentType, @AesKey, @AesIv, 0, @UserId);
+                    END
 
 CREATE OR ALTER PROCEDURE LoginUser
 	@UserName NVARCHAR(30),
@@ -130,7 +134,3 @@ BEGIN
 	SET IsBan = 1
 	WHERE UserName = @UserName
 END
-
-update dbo.UserTable
-set RoleId = 2
-where UserName = 'kamilus500'
