@@ -90,11 +90,7 @@ namespace RemoteBackupsApp.MVC.Controllers
 
         [AdminAuthorize]
         public async Task<IActionResult> AdminPanel()
-        {
-            var users = await _userContext.GetAllUsers();
-
-            return View(users);
-        }
+            => View(await _userContext.GetAllUsers());
 
         [AdminAuthorize]
         public async Task<IActionResult> BanUser(string userName)
