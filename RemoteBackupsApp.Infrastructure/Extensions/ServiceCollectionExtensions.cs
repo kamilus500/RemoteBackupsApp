@@ -31,7 +31,7 @@ namespace RemoteBackupsApp.Infrastructure.Extensions
 
             services.AddSignalR();
 
-            services.AddHangfire(config => config.UseSqlServerStorage(configuration.GetConnectionString("conString")+"Database = RemoteBackupDb"));
+            services.AddHangfire(config => config.UseSqlServerStorage(configuration.GetConnectionString("conString")));
 
             services.AddHangfireServer();
 

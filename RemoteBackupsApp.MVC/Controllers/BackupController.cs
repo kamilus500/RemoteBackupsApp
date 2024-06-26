@@ -30,7 +30,7 @@ namespace RemoteBackupsApp.MVC.Controllers
                 cachedData = backups;
                 var cacheEntryOptions = new MemoryCacheEntryOptions
                 {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(5)
                 };
                 _memoryCache.Set("BackupsIndex", cachedData, cacheEntryOptions);
             }
