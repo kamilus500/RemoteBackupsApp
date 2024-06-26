@@ -31,7 +31,7 @@
             let fileInput = $('#fileInput')[0].files[0];
             if (fileInput) {
                 var fileSize = fileInput.size;
-                var maxSize = 500 * 1024 * 1024; //500MB
+                var maxSize = 10 * 1024 * 1024; //10MB
                 if (fileSize > maxSize) {
                     $('#fileSizeErrorModal').modal('show');
                     $('#fileInput').val('');

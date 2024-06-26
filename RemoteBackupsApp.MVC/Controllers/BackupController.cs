@@ -42,7 +42,7 @@ namespace RemoteBackupsApp.MVC.Controllers
             => PartialView("~/Views/Backup/_CreateBackupModal.cshtml");
 
         [HttpPost]
-        [RequestSizeLimit(1024*1024*500)]
+        [RequestSizeLimit(1024*1024*10)]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(IFormFile file)
         {
