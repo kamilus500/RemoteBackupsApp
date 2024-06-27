@@ -24,18 +24,9 @@ namespace RemoteBackupsApp.MVC.Controllers
             if (!await _userContext.IsUserLogIn())
                 return View(new List<BackupViewModel>());
 
-            if (!_memoryCache.TryGetValue("BackupsIndex", out IEnumerable<BackupViewModel> cachedData))
-            {
-                var backups = await _backupService.GetBackups();
-                cachedData = backups;
-                var cacheEntryOptions = new MemoryCacheEntryOptions
-                {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(5)
-                };
-                _memoryCache.Set("BackupsIndex", cachedData, cacheEntryOptions);
-            }
+            var backups = await _backupService.GetBackups();
 
-            return View(cachedData);
+            return View(backups);
         }
 
         public ActionResult Create()
