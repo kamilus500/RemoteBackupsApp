@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Hangfire;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Caching.Memory;
 using RemoteBackupsApp.Domain.ViewModels.Backup;
 using RemoteBackupsApp.Infrastructure.Hubs;
 using RemoteBackupsApp.Infrastructure.Initializers;
@@ -15,13 +16,15 @@ namespace RemoteBackupsApp.Infrastructure.Services
         private readonly IFileService _fileService;
         private readonly IEncryptionService _encryptionService;
         private readonly IHubContext<NotyfyCompleteTaskHub> _hubContext;
+        private readonly IMemoryCache _memoryCache;
 
-        public FileProcessingService(DatabaseContext databaseContext, IFileService fileService, IEncryptionService encryptionService, IHubContext<NotyfyCompleteTaskHub> hubContext)
+        public FileProcessingService(DatabaseContext databaseContext, IFileService fileService, IEncryptionService encryptionService, IHubContext<NotyfyCompleteTaskHub> hubContext, IMemoryCache memoryCache)
         {
             _dbContext = databaseContext.CreateConnection();
             _fileService = fileService;
             _encryptionService = encryptionService;
             _hubContext = hubContext;
+            _memoryCache = memoryCache;
         }
 
         public void ProcessFile(FileProcessViewModel fileProcessViewModel)
@@ -55,6 +58,8 @@ namespace RemoteBackupsApp.Infrastructure.Services
             _hubContext.Clients.All.SendAsync("JobCompleted");
 
             File.Delete(fileProcessViewModel.TempFilePath);
+
+            _memoryCache.Remove("BackupsIndex");
 
             GC.Collect();
         }
