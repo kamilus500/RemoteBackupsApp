@@ -45,7 +45,7 @@ namespace RemoteBackupsApp.Infrastructure.Extensions
         {
             services.Configure<FormOptions>(o =>
             {
-                o.MultipartBodyLengthLimit = 1024 * 1024 * 500;
+                o.MultipartBodyLengthLimit = 1024 * 1024 * 10;
             });
         }
     }
