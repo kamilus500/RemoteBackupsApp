@@ -37,7 +37,7 @@ html, body {
 }
 
 .navbar {
-    background-color: lightgray;
+    background-color: #c7bfbf;
 }
 
 .navbar-brand {
@@ -64,9 +64,5 @@ html, body {
 
     .create-backup-button {
         margin: 0 auto;
-    }
-
-    .container {
-        margin: 20px;
     }
 }
