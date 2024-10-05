@@ -70,6 +70,8 @@ namespace RemoteBackupsApp.MVC.Controllers
 
                 GC.Collect();
 
+                ModelState.Clear();
+
                 return RedirectToAction(nameof(Index));
             }
             catch
