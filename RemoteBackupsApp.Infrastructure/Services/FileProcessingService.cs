@@ -55,11 +55,11 @@ namespace RemoteBackupsApp.Infrastructure.Services
                 _dbContext.Execute("CreateBackup", parameters, commandType: CommandType.StoredProcedure);
             }
 
+            _memoryCache.Remove("BackupsIndex");
+
             _hubContext.Clients.All.SendAsync("JobCompleted");
 
             File.Delete(fileProcessViewModel.TempFilePath);
-
-            _memoryCache.Remove("BackupsIndex");
 
             GC.Collect();
         }

@@ -31,20 +31,20 @@
                 <span style="font-size: 1.2rem; font-weight: 600">@Localizer["WelcomeMessage"] @userName !!!</span>
                 @if (await userContext.IsInRole("Admin"))
                 {
-                    <a class="btn btn-outline-primary ms-2" asp-action="AdminPanel" asp-controller="Auth">Admin Panel</a>
+                    <a class="btn btn-primary ms-2" asp-action="AdminPanel" asp-controller="Auth">Admin Panel</a>
                 }
-                <a asp-controller="Auth" asp-action="LogOut" asp-route-userName="@userName" class="btn btn-outline-primary ms-2">@Localizer["LogOut"]</a>
+                <a asp-controller="Auth" asp-action="LogOut" asp-route-userName="@userName" class="btn btn-primary ms-2">@Localizer["LogOut"]</a>
             }
             else
             {
-                <a id="login-button" data-bs-toggle="modal" data-bs-target="#registerLoginModal" class="btn btn-outline-primary">@Localizer["Login"]</a>
-                <a id="register-button" data-bs-toggle="modal" data-bs-target="#registerLoginModal" class="btn btn-outline-primary">@Localizer["Register"]</a>
+                <a id="login-button" data-bs-toggle="modal" data-bs-target="#registerLoginModal" class="btn btn-primary">@Localizer["Login"]</a>
+                <a id="register-button" data-bs-toggle="modal" data-bs-target="#registerLoginModal" class="btn btn-primary">@Localizer["Register"]</a>
             }
         </div>
 
         <div class="lang-section">
-            <a asp-controller="Home" asp-action="ChangeCulture" asp-route-culture="en-US" class="btn btn-outline-success btn-sm">EN</a>
-            <a asp-controller="Home" asp-action="ChangeCulture" asp-route-culture="pl-PL" class="btn btn-outline-success btn-sm">PL</a>
+            <a asp-controller="Home" asp-action="ChangeCulture" asp-route-culture="en-US" class="btn btn-success btn-sm">EN</a>
+            <a asp-controller="Home" asp-action="ChangeCulture" asp-route-culture="pl-PL" class="btn btn-success btn-sm">PL</a>
         </div>
     </div>
     <div class="container">

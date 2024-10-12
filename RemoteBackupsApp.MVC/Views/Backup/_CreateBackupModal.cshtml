@@ -1,11 +1,11 @@
-﻿<form asp-action="Create" enctype="multipart/form-data">
+﻿<form enctype="multipart/form-data" id="createPhotoForm" method="post">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="form-group">
         <label for="file" class="form-label">@Localizer["SelectFile"]</label>
         <input class="form-control" type="file" id="fileInput" name="file"/>
     </div>
     <div class="form-group text-center mt-2">
-        <input type="submit" value="@Localizer["Create"]" class="btn btn-outline-primary" />
+        <input type="submit" value="@Localizer["Create"]" class="btn btn-primary" />
     </div>
 </form>
 
@@ -19,7 +19,7 @@
                 <p>@Localizer["SizeFileMessage"]</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary" id="modalCloseBtn">@Localizer["Close"]</button>
+                <button type="button" class="btn btn-secondary" id="modalCloseBtn">@Localizer["Close"]</button>
             </div>
         </div>
     </div>
@@ -42,6 +42,26 @@
 
         $('#modalCloseBtn').click(function () {
             $('#fileSizeErrorModal').modal('hide');
+        });
+
+        $('#createPhotoForm').on('submit', function(e) {
+            e.preventDefault();
+
+            var formData = new FormData(this);
+
+            $.ajax({
+                    url: '/Backup/Create',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(response) {
+
+                },
+                error: function(xhr, status, error) {
+                    alert('Error: ' + error);
+                }
+            });
         });
     });
 </script>

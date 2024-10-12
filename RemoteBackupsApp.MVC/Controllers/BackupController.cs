@@ -44,7 +44,7 @@ namespace RemoteBackupsApp.MVC.Controllers
         [HttpPost]
         [RequestSizeLimit(1024*1024*10)]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(IFormFile file)
+        public async Task Create(IFormFile file)
         {
             try
             {
@@ -71,12 +71,10 @@ namespace RemoteBackupsApp.MVC.Controllers
                 GC.Collect();
 
                 ModelState.Clear();
-
-                return RedirectToAction(nameof(Index));
             }
             catch
             {
-                return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+                //return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
             }
         }
 
