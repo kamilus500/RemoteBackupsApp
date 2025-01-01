@@ -9,10 +9,10 @@ html, body {
 }
 
 .grid-container {
-    margin-top: 1rem;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(12.5rem, 12.5rem));
     gap: 2rem 1rem;
+    margin-top: 1rem;
 }
 
 .item {
