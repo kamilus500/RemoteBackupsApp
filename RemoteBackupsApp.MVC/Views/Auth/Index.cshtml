@@ -1,0 +1,103 @@
+﻿@model RemoteBackupsApp.MVC.Models.Auth.LoginRegisterViewModel
+
+@{
+    ViewData["Title"] = "Logowanie / Rejestracja";
+}
+
+<div class="container-fluid vh-100">
+    <div class="row h-100">
+
+        <!-- Lewa kolumna: ilustracja / logo -->
+        <div class="col-lg-6 d-none d-lg-flex align-items-center justify-content-center bg-primary text-white"
+             style="background: linear-gradient(135deg, #0d6efd, #6610f2);">
+            <div class="text-center px-4">
+                <h1 class="display-4 fw-bold">Remote Backups</h1>
+                <p class="lead">Bezpieczne przechowywanie i dostęp do Twoich plików z każdego miejsca.</p>
+                <i class="bi bi-cloud-arrow-up-fill display-1"></i>
+            </div>
+        </div>
+
+        <!-- Prawa kolumna: formularze -->
+        <div class="col-lg-6 d-flex align-items-center justify-content-center">
+            <div class="card shadow-lg p-4 w-100" style="max-width: 450px; border-radius: 1rem;">
+
+                <!-- Zakładki -->
+                <ul class="nav nav-tabs nav-justified mb-3" id="authTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#login"
+                                type="button" role="tab">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Logowanie
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="register-tab" data-bs-toggle="tab" data-bs-target="#register"
+                                type="button" role="tab">
+                            <i class="bi bi-pencil-square me-1"></i> Rejestracja
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="authTabsContent">
+
+                    <!-- LOGIN -->
+                    <div class="tab-pane fade show active" id="login" role="tabpanel">
+                        <form asp-action="Login" method="post" novalidate>
+                            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                            <div class="mb-3">
+                                <label asp-for="Username" class="form-label"></label>
+                                <input asp-for="Username" class="form-control form-control-lg" placeholder="Nazwa użytkownika" />
+                                <span asp-validation-for="Username" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="Password" class="form-label"></label>
+                                <input asp-for="Password" class="form-control form-control-lg" type="password" placeholder="Hasło" />
+                                <span asp-validation-for="Password" class="text-danger"></span>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100 fw-bold">
+                                <i class="bi bi-box-arrow-in-right me-1"></i> Zaloguj
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- REGISTER -->
+                    <div class="tab-pane fade" id="register" role="tabpanel">
+                        <form asp-action="Register" method="post" novalidate>
+                            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                            <div class="mb-3">
+                                <label asp-for="Username" class="form-label"></label>
+                                <input asp-for="Username" class="form-control form-control-lg" placeholder="Nazwa użytkownika" />
+                                <span asp-validation-for="Username" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="Email" class="form-label"></label>
+                                <input asp-for="Email" class="form-control form-control-lg" type="email" placeholder="Adres email" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="Password" class="form-label"></label>
+                                <input asp-for="Password" class="form-control form-control-lg" type="password" placeholder="Hasło" />
+                                <span asp-validation-for="Password" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="ConfirmPassword" class="form-label"></label>
+                                <input asp-for="ConfirmPassword" class="form-control form-control-lg" type="password" placeholder="Powtórz hasło" />
+                                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                            </div>
+                            <button type="submit" class="btn btn-success w-100 fw-bold">
+                                <i class="bi bi-pencil-square me-1"></i> Zarejestruj
+                            </button>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
