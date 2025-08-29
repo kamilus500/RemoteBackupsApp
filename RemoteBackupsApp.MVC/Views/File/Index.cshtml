@@ -1,0 +1,57 @@
+﻿@model IEnumerable<RemoteBackupsApp.Domain.Models.FileDto>
+
+<partial name="/Views/Home/_Navbar.cshtml" />
+
+<div class="container my-4">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 justify-content-center mb-5">
+        <div class="col-auto">
+            <div class="card h-100 shadow-sm border-0 d-flex justify-content-center align-items-center upload-card rounded-3"
+                 style="cursor: pointer; min-height: 180px;"
+                 onclick="document.getElementById('fileInput').click();">
+                <div class="card-body d-flex flex-column justify-content-center align-items-center text-center p-3">
+                    <i class="bi bi-plus-lg fs-1 mb-2 text-primary"></i>
+                    <p class="mb-0 fw-semibold">Załaduj plik</p>
+                </div>
+            </div>
+            <form asp-controller="File" asp-action="Upload" method="post" enctype="multipart/form-data" id="uploadForm" style="display:none;">
+                <input type="file" id="fileInput" name="file" onchange="document.getElementById('uploadForm').submit();" />
+            </form>
+        </div>
+    </div>
+
+    @if (Model.Any())
+    {
+        <div class="table-responsive shadow-sm rounded-3">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th class="text-center">Nazwa pliku</th>
+                        <th class="text-center">Rozszerzenie</th>
+                        <th class="text-center">Rozmiar</th>
+                        <th class="text-center">Data dodania</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var file in Model)
+                    {
+                        <tr>
+                            <td class="text-center">@file.FileName</td>
+                            <td class="text-center">@file.FileExtension</td>
+                            <td class="text-center">@(Math.Round(file.FileSize / 1024.0 / 1024.0, 2)) MB</td>
+                            <td class="text-center">@file.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                            <td class="text-center">
+                                <a asp-controller="File" asp-action="Download" asp-route-fileId="@file.FileId" class="btn btn-sm btn-primary">
+                                    <i class="bi bi-download me-1"></i> Pobierz
+                                </a>
+                                <a asp-controller="File" asp-action="Delete" asp-route-fileId="@file.FileId" class="btn btn-sm btn-primary">
+                                    <i class="bi bi-trash me-1"></i> Usuń
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

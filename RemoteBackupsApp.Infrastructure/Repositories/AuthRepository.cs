@@ -1,4 +1,5 @@
 ﻿using RemoteBackupsApp.Domain.Interfaces;
+using RemoteBackupsApp.Domain.Models;
 using System.Data;
 
 namespace RemoteBackupsApp.Infrastructure.Repositories
@@ -12,11 +13,11 @@ namespace RemoteBackupsApp.Infrastructure.Repositories
             _sqlService = sqlService;
         }
 
-        public async Task<int> LoginAsync(string userName, string password)
+        public async Task<LoginResult> LoginAsync(string userName, string password)
         {
             var passwordBytes = System.Text.Encoding.UTF8.GetBytes(password);
 
-            return await _sqlService.QuerySingleAsync<int>(
+            return await _sqlService.QuerySingleAsync<LoginResult>(
                 "dbo.LoginUser",
                 new { Username = userName, PasswordHash = passwordBytes },
                 CommandType.StoredProcedure);

@@ -1,8 +1,10 @@
-﻿namespace RemoteBackupsApp.Domain.Interfaces
+﻿using RemoteBackupsApp.Domain.Models;
+
+namespace RemoteBackupsApp.Domain.Interfaces
 {
     public interface IAuthRepository
     {
-        Task<int> LoginAsync(string userName, string password);
+        Task<LoginResult> LoginAsync(string userName, string password);
         Task<int> RegisterAsync(string userName, string email, string password);
         Task<int> Logout(string userName);
     }

@@ -57,7 +57,7 @@ BEGIN
     CREATE TABLE dbo.FileAccessLog
     (
         LogId        INT IDENTITY(1,1) PRIMARY KEY,
-        FileId       INT NOT NULL FOREIGN KEY REFERENCES dbo.Files(FileId),
+        FileId       INT NULL FOREIGN KEY REFERENCES dbo.Files(FileId) ON DELETE SET NULL,
         UserId       INT NOT NULL FOREIGN KEY REFERENCES dbo.Users(UserId),
         Action       NVARCHAR(50) NOT NULL, -- np. 'DOWNLOAD', 'UPLOAD', 'UPDATE', 'DELETE'
         ActionTime   DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME()
@@ -82,10 +82,10 @@ IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_FileAccessLog_FileId' 
     CREATE INDEX IX_FileAccessLog_FileId ON dbo.FileAccessLog(FileId);
 GO
 
+--Procedures
 --(-99) - SqlError
 --(0) - User with username or email exist
 --(1) - Success
---Procedures
 CREATE OR ALTER PROCEDURE dbo.CreateUser
     @Username NVARCHAR(100),
     @Email NVARCHAR(255),
@@ -163,7 +163,7 @@ BEGIN
 
         COMMIT TRANSACTION;
 
-        SELECT 1 AS Result;
+        SELECT 1 AS Result, @UserId AS UserId;
     END TRY
     BEGIN CATCH
         IF @@TRANCOUNT > 0
@@ -228,5 +228,66 @@ BEGIN
         RAISERROR(@ErrMsg, @ErrSeverity, 1);
         SELECT -99 AS Result;
     END CATCH
+END
+GO
+
+--(-99) - SqlError
+--(1)   - Success
+CREATE OR ALTER PROCEDURE dbo.InsertFile
+    @UserId INT,
+    @FileName NVARCHAR(255),
+    @FileExtension NVARCHAR(10),
+    @FileSize BIGINT,
+    @FilePath NVARCHAR(1000),
+    @CreatedAt DATETIME
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @FileId INT;
+
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        INSERT INTO dbo.Files (UserId, FileName, FileExtension, FileSize, FilePath, CreatedAt)
+        VALUES (@UserId, @FileName, @FileExtension, @FileSize, @FilePath, @CreatedAt);
+
+        SET @FileId = SCOPE_IDENTITY();
+
+        INSERT INTO dbo.FileAccessLog (FileId, UserId, Action, ActionTime)
+        VALUES (@FileId, @UserId, 'UPLOAD', GETUTCDATE());
+
+        COMMIT TRANSACTION;
+
+        SELECT 1 AS Result, @FileId AS FileId;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0
+            ROLLBACK TRANSACTION;
+
+        DECLARE @ErrMsg NVARCHAR(4000), @ErrSeverity INT;
+        SELECT @ErrMsg = ERROR_MESSAGE(), @ErrSeverity = ERROR_SEVERITY();
+
+        SELECT -99 AS Result;
+        PRINT @ErrMsg;
+    END CATCH
+END
+GO
+
+--Views
+IF NOT EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N'dbo.vwUserFiles'))
+BEGIN
+    EXEC('
+        CREATE VIEW dbo.vwUserFiles
+        AS
+        SELECT
+            UserId,
+            FileId,
+            FileExtension,
+            FileName,
+            FileSize,
+            CreatedAt
+        FROM dbo.Files
+    ')
 END
 GO

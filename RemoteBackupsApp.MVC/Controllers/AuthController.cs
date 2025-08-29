@@ -34,29 +34,30 @@ namespace RemoteBackupsApp.MVC.Controllers
         {
             var result = await _authRepository.LoginAsync(viewModel.Username, viewModel.Password);
 
-            if (result == -99)
+            if (result.Result == -99)
             {
                 _toastNotification.AddErrorToastMessage("Coś poszło nie tak!");
                 return RedirectToAction("Index");
             }
 
-            if (result == -1)
+            if (result.Result == -1)
             {
                 _toastNotification.AddErrorToastMessage("Użytkownik nie istnieje!");
                 return RedirectToAction("Index");
             }
 
-            if (result == 0)
+            if (result.Result == 0)
             {
                 _toastNotification.AddErrorToastMessage("Użytkownik jest już zalogowany!");
                 return RedirectToAction("Index");
             }
 
-            if (result == 1)
+            if (result.Result == 1)
             {
                 _memoryCache.Set("Username", viewModel.Username);
+                _memoryCache.Set("UserId", result.UserId);
                 _memoryCache.Set("IsLogged", true);
-                _toastNotification.AddSuccessToastMessage("Zalogowany!");
+
                 return RedirectToAction("Index", "Home");
             }
 
@@ -104,6 +105,8 @@ namespace RemoteBackupsApp.MVC.Controllers
                 if (result == 1)
                 {
                     _memoryCache.Remove("IsLogged");
+                    _memoryCache.Remove("Username");
+                    _memoryCache.Remove("UserId");
                 }
             }
 

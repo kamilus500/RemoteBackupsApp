@@ -6,29 +6,24 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark custom-navbar shadow-sm">
     <div class="container-fluid">
-        <!-- Logo -->
         <a class="navbar-brand fw-bold d-flex align-items-center" asp-controller="Home" asp-action="Index">
             <i class="bi bi-cloud-arrow-up-fill me-2"></i> Remote Backups
         </a>
 
-        <!-- Toggle dla mobile -->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
                 aria-controls="mainNavbar" aria-expanded="false" aria-label="Przełącz nawigację">
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <!-- Menu -->
         <div class="collapse navbar-collapse" id="mainNavbar">
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
 
-                <!-- Moje pliki -->
                 <li class="nav-item me-lg-3">
-                    <a class="btn btn-outline-light fw-bold d-flex align-items-center custom-btn" asp-controller="Files" asp-action="Index">
+                    <a class="btn btn-outline-light fw-bold d-flex align-items-center custom-btn" asp-controller="File" asp-action="Index">
                         <i class="bi bi-folder2-open me-1"></i> Moje pliki
                     </a>
                 </li>
 
-                <!-- Dropdown użytkownika -->
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
                        data-bs-toggle="dropdown" aria-expanded="false">
