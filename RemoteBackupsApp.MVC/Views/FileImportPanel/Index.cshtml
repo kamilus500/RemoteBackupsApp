@@ -6,12 +6,12 @@
 <div class="container my-4">
     @if (Model.Any())
     {
-        <div class="table-responsive shadow-sm rounded-3">
-            <table class="table table-hover align-middle">
+        <div class="shadow-sm rounded-3 table-responsive">
+            <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr>
                         <th class="text-center">Nazwa pliku</th>
-                        <th class="text-center">Postęp (%)</th>
+                        <th class="text-center">Postęp</th>
                         <th class="text-center">Status</th>
                         <th class="text-center">Rozpoczęto</th>
                         <th class="text-center">Zaktualizowano</th>
@@ -22,34 +22,35 @@
                     @foreach (var item in Model)
                     {
                         <tr>
-                            <td class="text-center">
+                            <td class="text-center text-truncate" style="max-width: 180px;">
                                 @item.FileName
                             </td>
                             <td class="text-center">
-                                <div class="progress" style="height: 20px;">
+                                <div class="progress" style="height: 20px; min-width: 100px;">
                                     <div class="progress-bar 
                                                 @(item.Status == "Completed" ? "bg-success" : 
                                                   item.Status == "Failed" ? "bg-danger" : "bg-info")" 
                                          role="progressbar" 
-                                         style="width: 100%;" 
+                                         style="width: @item.ProgressPct%;" 
                                          aria-valuenow="@item.ProgressPct" 
                                          aria-valuemin="0" aria-valuemax="100"
                                          id="process-@item.ProgressId">
-                                        @item.ProgressPct.ToString("0.##")%
+                                        @item.ProgressPct%
                                     </div>
                                 </div>
                             </td>
                             <td class="text-center">
-                                <span id="progress-status-@item.ProgressId" class="badge 
-                                    @(item.Status == "Completed" ? "bg-success" : 
-                                      item.Status == "Failed" ? "bg-danger" : 
-                                      item.Status == "Uploading" ? "bg-primary" : "bg-secondary")">
+                                <span id="progress-status-@item.ProgressId" 
+                                      class="badge 
+                                        @(item.Status == "Completed" ? "bg-success" : 
+                                          item.Status == "Failed" ? "bg-danger" : 
+                                          item.Status == "Uploading" ? "bg-primary" : "bg-secondary")">
                                     @item.Status
                                 </span>
                             </td>
-                            <td class="text-center">@item.StartedAt.ToString("yyyy-MM-dd HH:mm")</td>
-                            <td class="text-center">@item.UpdatedAt.ToString("yyyy-MM-dd HH:mm")</td>
-                            <td class="text-center" id="progress-completed-@item.ProgressId">
+                            <td class="text-center small">@item.StartedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                            <td class="text-center small">@item.UpdatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                            <td class="text-center small" id="progress-completed-@item.ProgressId">
                                 @(item.CompletedAt.HasValue 
                                     ? item.CompletedAt.Value.ToString("yyyy-MM-dd HH:mm") 
                                     : "-")
@@ -65,4 +66,5 @@
         <p class="text-muted">Brak rekordów uploadu.</p>
     }
 </div>
+
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>

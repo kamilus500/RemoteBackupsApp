@@ -35,7 +35,7 @@
 
             $progressBar.attr("aria-valuenow", data.percentage);
 
-            $progressBar.text(data.percentage.toFixed(2) + "%");
+            $progressBar.text(data.percentage + "%");
 
             $progressBar.removeClass("bg-success bg-info bg-danger");
             if (data.status === "Completed") {

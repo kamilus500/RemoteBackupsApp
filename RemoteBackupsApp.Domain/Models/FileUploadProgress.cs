@@ -8,7 +8,7 @@
         public int FileId { get; set; }
         public int UserId { get; set; }
 
-        public decimal ProgressPct { get; set; } = 0m;
+        public int ProgressPct { get; set; } = 0;
 
         public string Status { get; set; } = "Pending"; // Pending, Uploading, Completed, Failed
 

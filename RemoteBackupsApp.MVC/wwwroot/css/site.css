@@ -70,6 +70,11 @@
     text-overflow: ellipsis;
 }
 
+.table-scroll {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
 /*Progress bar*/
 .full-width-progress {
     width: 100% !important;
