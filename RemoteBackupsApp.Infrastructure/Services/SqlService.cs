@@ -33,7 +33,7 @@ namespace RemoteBackupsApp.Infrastructure.Services
         public async Task<int> ExecuteAsync(string sql, object? parameters = null, CommandType commandType = CommandType.Text)
         {
             using var connection = CreateConnection();
-            return await connection.ExecuteAsync(sql, parameters, commandType: commandType);
+            return await connection.ExecuteScalarAsync<int>(sql, parameters, commandType: commandType);
         }
     }
 }

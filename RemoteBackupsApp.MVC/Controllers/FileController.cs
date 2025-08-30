@@ -4,6 +4,7 @@ using NToastNotify;
 using RemoteBackupsApp.Domain.Interfaces;
 using RemoteBackupsApp.Domain.Models;
 using RemoteBackupsApp.Infrastructure.Helpers;
+using RemoteBackupsApp.Infrastructure.Repositories;
 
 namespace RemoteBackupsApp.MVC.Controllers
 {
@@ -11,14 +12,18 @@ namespace RemoteBackupsApp.MVC.Controllers
     {
         private readonly IFilesRepository _fileRepository;
         private readonly IFileQueueService _fileQueue;
+        private readonly IFileUploadProcessRepository _fileUploadProcessRepository;
         private readonly IToastNotification _toastNotification;
         private readonly IMemoryCache _memoryCache;
-        public FileController(IFilesRepository filesRepository, IFileQueueService fileQueue, IToastNotification toastNotification, IMemoryCache memoryCache)
+        private readonly IWebHostEnvironment _env;
+        public FileController(IFilesRepository filesRepository, IFileQueueService fileQueue, IFileUploadProcessRepository fileUploadProcessRepository, IToastNotification toastNotification, IWebHostEnvironment env, IMemoryCache memoryCache)
         {
             _fileRepository = filesRepository ?? throw new ArgumentNullException(nameof(filesRepository));
             _fileQueue = fileQueue ?? throw new ArgumentNullException(nameof(fileQueue));
+            _fileUploadProcessRepository = fileUploadProcessRepository ?? throw new ArgumentNullException(nameof(fileUploadProcessRepository));
             _toastNotification = toastNotification ?? throw new ArgumentNullException(nameof(toastNotification));
             _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
+            _env = env ?? throw new ArgumentNullException(nameof(env));
         }
 
         [HttpGet]
@@ -37,26 +42,42 @@ namespace RemoteBackupsApp.MVC.Controllers
             if (file == null || file.Length == 0)
                 _toastNotification.AddAlertToastMessage("Plik nie został przesłany.");
 
-            var jobId = Guid.NewGuid().ToString();
+
+            var userId = _memoryCache.Get<int>("UserId");
+
+            var filePath = Path.Combine("UserFiles", _memoryCache.Get<int>("UserId").ToString(), file.FileName);
+            var webRootPath = Path.Combine(_env.WebRootPath, "uploads") + $"\\{userId}";
+            var targetPath = Path.Combine(webRootPath, file.FileName);
 
             var request = new FileUploadRequest
             {
                 File = await FileHelper.ConvertToBytesAsync(file),
                 FileName = file.FileName,
                 FileSize = file.Length,
-                CreatedAt = DateTime.UtcNow,
                 FileExtension = Path.GetExtension(file.FileName),
-                FilePath = Path.Combine("UserFiles", _memoryCache.Get<int>("UserId").ToString(), file.FileName),
-                UserId = _memoryCache.Get<int>("UserId").ToString(),
-                TargetFolder = Path.Combine("UserFiles", _memoryCache.Get<int>("UserId").ToString()),
-                JobId = jobId
+                FilePath = targetPath,
+                UserId = userId,
+                TargetFolder = Path.Combine("UserFiles", _memoryCache.Get<int>("UserId").ToString())
             };
+
+            var fileId = await _fileRepository.SaveFile(new FileDto()
+            {
+                FileSize = request.FileSize,
+                FileExtension = Path.GetExtension(request.FileName),
+                FileName = request.FileName,
+                FilePath = targetPath,
+                UserId = request.UserId
+            });
+
+            var processId = await _fileUploadProcessRepository.Create(userId, fileId);
+
+            request.ProcessId = processId;
 
             await _fileQueue.EnqueueFileAsync(request);
 
             _toastNotification.AddInfoToastMessage("Ddano plik do kolejki przesyłania.");
 
-            return Ok(new { jobId });
+            return RedirectToAction("Index");
         }
 
         [HttpGet]

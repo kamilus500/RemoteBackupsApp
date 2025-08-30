@@ -4,8 +4,8 @@ namespace RemoteBackupsApp.Domain.Models
 {
     public class FileDto
     {
-        public string FileId { get; set; }
-        public string UserId { get; set; }
+        public int FileId { get; set; }
+        public int UserId { get; set; }
         public string FileName { get; set; }
         public long FileSize { get; set; }
         public string FileExtension { get; set; }

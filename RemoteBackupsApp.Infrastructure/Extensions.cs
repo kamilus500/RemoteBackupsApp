@@ -16,6 +16,7 @@ namespace RemoteBackupsApp.Infrastructure
             services.AddScoped<ISqlService, SqlService>();
             services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IFilesRepository, FilesRepository>();
+            services.AddScoped<IFileUploadProcessRepository, FileUploadProcessRepository>();
 
             services.AddSingleton<IFileQueueService, FileQueueService>();
             services.AddHostedService<FileBackgroundService>();

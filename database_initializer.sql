@@ -17,7 +17,7 @@ BEGIN
         Email        NVARCHAR(255) NOT NULL UNIQUE,
         IsLogged     BIT NOT NULL DEFAULT(0),
         PasswordHash VARBINARY(256) NOT NULL,
-        CreatedAt    DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+        CreatedAt    DATETIME NOT NULL DEFAULT GETUTCDATE(),
         IsDeleted    BIT NOT NULL DEFAULT(0)
     );
 END
@@ -34,7 +34,7 @@ BEGIN
         FileExtension NVARCHAR(10) NULL,
         FileSize      BIGINT NOT NULL,
         FilePath      NVARCHAR(1000) NULL,
-        CreatedAt     DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+        CreatedAt     DATETIME NOT NULL DEFAULT GETUTCDATE(),
         IsDeleted    BIT NOT NULL DEFAULT(0)
     );
 END
@@ -49,7 +49,7 @@ BEGIN
         FileId       INT NOT NULL FOREIGN KEY REFERENCES dbo.Files(FileId),
         UserId       INT NOT NULL FOREIGN KEY REFERENCES dbo.Users(UserId),
         Action       NVARCHAR(50) NOT NULL, -- 'DOWNLOAD', 'UPLOAD', 'UPDATE', 'DELETE'
-        ActionTime   DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME()
+        ActionTime   DATETIME NOT NULL DEFAULT GETUTCDATE()
     );
 END
 GO
@@ -64,9 +64,9 @@ BEGIN
         UserId        INT NOT NULL FOREIGN KEY REFERENCES dbo.Users(UserId),
         ProgressPct   DECIMAL(5,2) NOT NULL DEFAULT 0,
         Status        NVARCHAR(50) NOT NULL DEFAULT N'Pending', -- np. Pending, Uploading, Completed, Failed
-        StartedAt     DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
-        UpdatedAt     DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
-        CompletedAt   DATETIME2 NULL
+        StartedAt     DATETIME NOT NULL DEFAULT GETUTCDATE(),
+        UpdatedAt     DATETIME NOT NULL DEFAULT GETUTCDATE(),
+        CompletedAt   DATETIME NULL
     );
 END
 GO
@@ -275,8 +275,7 @@ CREATE OR ALTER PROCEDURE dbo.InsertFile
     @FileName NVARCHAR(255),
     @FileExtension NVARCHAR(10),
     @FileSize BIGINT,
-    @FilePath NVARCHAR(1000),
-    @CreatedAt DATETIME
+    @FilePath NVARCHAR(1000)
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -285,18 +284,18 @@ BEGIN
 
     BEGIN TRY
         BEGIN TRANSACTION;
-
-        INSERT INTO dbo.Files (UserId, FileName, FileExtension, FileSize, FilePath, CreatedAt)
-        VALUES (@UserId, @FileName, @FileExtension, @FileSize, @FilePath, @CreatedAt);
+        
+        INSERT INTO dbo.Files (UserId, FileName, FileExtension, FileSize, FilePath)
+        VALUES (@UserId, @FileName, @FileExtension, @FileSize, @FilePath);
 
         SET @FileId = SCOPE_IDENTITY();
-
-        INSERT INTO dbo.FileAccessLog (FileId, UserId, Action, ActionTime)
-        VALUES (@FileId, @UserId, 'UPLOAD', GETUTCDATE());
+        
+        INSERT INTO dbo.FileAccessLog (FileId, UserId, Action)
+        VALUES (@FileId, @UserId, 'UPLOAD');
 
         COMMIT TRANSACTION;
 
-        SELECT 1 AS Result, @FileId AS FileId;
+        SELECT @FileId AS Result;
     END TRY
     BEGIN CATCH
         IF @@TRANCOUNT > 0
@@ -336,8 +335,8 @@ BEGIN
             RETURN;
         END
 
-         INSERT INTO dbo.FileAccessLog (FileId, UserId, Action, ActionTime)
-         VALUES (@FileId, @UserId, 'DELETE', SYSUTCDATETIME());
+         INSERT INTO dbo.FileAccessLog (FileId, UserId, Action)
+         VALUES (@FileId, @UserId, 'DELETE');
 
         COMMIT TRANSACTION;
 
@@ -352,6 +351,97 @@ BEGIN
 
         SELECT -99 AS Result
         PRINT @ErrMsg;
+    END CATCH
+END
+GO
+
+--(-99) sql error
+--(-2) user not exist
+--(-1) file not exist
+--(1) Success
+CREATE OR ALTER PROCEDURE dbo.CreateFileUploadRequest
+    @FileId   INT,
+    @UserId   INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        IF NOT EXISTS (SELECT 1 FROM dbo.Files WHERE FileId = @FileId)
+        BEGIN
+            ROLLBACK TRANSACTION;
+            SELECT -1 AS Result;
+            RETURN;
+        END
+
+        IF NOT EXISTS (SELECT 1 FROM dbo.Users WHERE UserId = @UserId)
+        BEGIN
+            ROLLBACK TRANSACTION;
+            SELECT -2 AS Result;
+            RETURN;
+        END
+
+        INSERT INTO dbo.FileUploadProgress (FileId, UserId)
+        VALUES (@FileId, @UserId);
+
+        COMMIT TRANSACTION;
+
+        SELECT SCOPE_IDENTITY() AS Result;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0
+            ROLLBACK TRANSACTION;
+
+        DECLARE @ErrMsg NVARCHAR(4000), @ErrSeverity INT;
+        SELECT @ErrMsg = ERROR_MESSAGE(), @ErrSeverity = ERROR_SEVERITY();
+        SELECT -99 AS Result;
+        PRINT(@ErrMsg);
+    END CATCH
+END
+GO
+
+--(-99) -sql error
+--(-1) - Fup is not exist
+--(1) - Success
+CREATE OR ALTER PROCEDURE dbo.UpdateFileUploadRequest
+    @ProgressId   INT,
+    @ProgressPct  DECIMAL(5,2),
+    @Status       NVARCHAR(50)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        IF NOT EXISTS (SELECT 1 FROM dbo.FileUploadProgress WHERE ProgressId = @ProgressId)
+        BEGIN
+            ROLLBACK TRANSACTION;
+            SELECT -1 AS Result;
+            RETURN;
+        END
+
+        UPDATE dbo.FileUploadProgress
+        SET ProgressPct = @ProgressPct,
+            Status = @Status,
+            UpdatedAt = GETUTCDATE(),
+            CompletedAt = CASE WHEN @Status = N'Completed' THEN GETUTCDATE() ELSE NULL END
+        WHERE ProgressId = @ProgressId;
+
+        COMMIT TRANSACTION;
+
+        SELECT 1 AS Result;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0
+            ROLLBACK TRANSACTION;
+
+        DECLARE @ErrMsg NVARCHAR(4000), @ErrSeverity INT;
+        SELECT @ErrMsg = ERROR_MESSAGE(), @ErrSeverity = ERROR_SEVERITY();
+        SELECT -99 AS Result;
+        PRINT(@ErrMsg);
     END CATCH
 END
 GO
@@ -372,6 +462,30 @@ BEGIN
             CreatedAt,
             IsDeleted
         FROM dbo.Files
+    ')
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N'dbo.vwFileUploadProgress'))
+BEGIN
+    EXEC('
+        CREATE VIEW dbo.vwFileUploadProgress
+        AS
+        SELECT
+            fup.ProgressId,
+            fup.FileId,
+            f.FileName,
+            f.FileExtension,
+            f.FileSize,
+            fup.UserId,
+            fup.ProgressPct,
+            fup.Status,
+            fup.StartedAt,
+            fup.UpdatedAt,
+            fup.CompletedAt,
+            f.CreatedAt
+        FROM dbo.FileUploadProgress fup
+        INNER JOIN dbo.Files f ON fup.FileId = f.FileId
     ')
 END
 GO

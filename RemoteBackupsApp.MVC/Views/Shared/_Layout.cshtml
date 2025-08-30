@@ -11,12 +11,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 </head>
 <body>
-    <div id="progressPopup" class="progress-popup">
-        <p>Name: <span id="fileName"></span></p>
-        <p>Status: <span id="statusText"></span></p>
-        <progress id="progressBar" max="100" value="0"></progress>
-    </div>
-
     @RenderBody()
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
@@ -29,15 +23,44 @@
             .withUrl("/uploadHub")
             .build();
 
-        connection.on("ProgressUpdated", function (progress) {
-            $('#statusText').text(progress.status);
-            $('#progressBar').val(progress.percentage);
-        });
-
         connection.on("UploadSuccess", function () {
-            window.location.reload();
-            $('#progressPopup').fadeOut();
+            
         })
+
+        connection.on("ProgressUpdated", function (data) {
+            let $progressBar = $("#process-" + data.processId);
+            if ($progressBar.length === 0) return;
+
+            $progressBar.css("width", data.percentage + "%");
+
+            $progressBar.attr("aria-valuenow", data.percentage);
+
+            $progressBar.text(data.percentage.toFixed(2) + "%");
+
+            $progressBar.removeClass("bg-success bg-info bg-danger");
+            if (data.status === "Completed") {
+                $progressBar.addClass("bg-success");
+                
+                let $progressStatus = $("#progress-status-"+data.processId);
+                $progressStatus.removeClass("bg-secondary bg-primary").addClass("bg-success");
+                $progressStatus.text("Completed");
+
+                let $progressCompleteDate = $("#progress-completed-" + data.processId);
+                let completedAt = new Date(data.date);
+                $progressCompleteDate.text(completedAt.toISOString().slice(0, 16).replace("T", " "));
+
+            } else if (data.status === "Failed") { 
+                $progressBar.addClass("bg-danger");
+                $progressBar.text("Failed");
+            }
+            else {
+                $progressBar.addClass("bg-info");
+            }
+        });
+        
+        connection.start()
+            .then(() => console.log("SignalR connected"))
+            .catch(err => console.error(err));
     </script>
 </body>
 </html>

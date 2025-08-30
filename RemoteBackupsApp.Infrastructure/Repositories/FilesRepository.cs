@@ -38,7 +38,7 @@ namespace RemoteBackupsApp.Infrastructure.Repositories
                     CommandType.Text
                 );
 
-        public async Task SaveFile(FileDto file)
+        public async Task<int> SaveFile(FileDto file)
         {
             var parameters = new
             {
@@ -46,11 +46,10 @@ namespace RemoteBackupsApp.Infrastructure.Repositories
                 FileName = file.FileName,
                 FileExtension = file.FileExtension,
                 FileSize = file.FileSize,
-                FilePath = file.FilePath,
-                CreatedAt = file.CreatedAt
+                FilePath = file.FilePath
             };
 
-            await _sqlService.ExecuteAsync("dbo.InsertFile", parameters, CommandType.StoredProcedure);
+            return await _sqlService.ExecuteAsync("dbo.InsertFile", parameters, CommandType.StoredProcedure);
         }
     }
 }

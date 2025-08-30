@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using RemoteBackupsApp.Domain.Interfaces;
-using RemoteBackupsApp.Domain.Models;
 using RemoteBackupsApp.Infrastructure.Hubs;
 
 public class FileBackgroundService : BackgroundService
@@ -27,6 +26,10 @@ public class FileBackgroundService : BackgroundService
 
         await foreach (var fileRequest in reader.ReadAllAsync(stoppingToken))
         {
+            int percent = 0;
+            using var scope = _services.CreateScope();
+            var filesUploadRepository = scope.ServiceProvider.GetRequiredService<IFileUploadProcessRepository>();
+
             try
             {
                 var uploadPath = Path.Combine(_env.WebRootPath, "uploads") + $"\\{fileRequest.UserId}";
@@ -50,45 +53,44 @@ public class FileBackgroundService : BackgroundService
                         await fileStream.WriteAsync(buffer, 0, read, stoppingToken);
 
                         writtenBytes += read;
-                        int percent = (int)((writtenBytes * 100.0) / totalBytes);
-                        Thread.Sleep(10);
+                        percent = (int)((writtenBytes * 100.0) / totalBytes);
+                        Thread.Sleep(20);
+
+                        await filesUploadRepository.UpdateProgress(fileRequest.ProcessId, percent, "Uploading");
 
                         await _hub.Clients.All
                             .SendAsync("ProgressUpdated", new
                             {
+                                processId = fileRequest.ProcessId,
                                 percentage = percent,
-                                status = "Processing"
+                                status = "Uploading"
                             }, cancellationToken: stoppingToken);
                     }
                 }
 
+                await filesUploadRepository.UpdateProgress(fileRequest.ProcessId, 100, "Completed");
+
                 await _hub.Clients.All
                     .SendAsync("ProgressUpdated", new
                     {
+                        processId = fileRequest.ProcessId,
                         percentage = 100,
-                        status = "Completed"
+                        status = "Completed",
+                        date = DateTime.UtcNow
                     }, cancellationToken: stoppingToken);
 
                 Console.WriteLine($"Plik zapisany: {filePath}");
-
-                using var scope = _services.CreateScope();
-                var filesRepository = scope.ServiceProvider.GetRequiredService<IFilesRepository>();
-
-                await filesRepository.SaveFile(new FileDto()
-                {
-                    FileSize = fileRequest.FileSize,
-                    CreatedAt = fileRequest.CreatedAt,
-                    FileExtension = Path.GetExtension(fileRequest.FileName),
-                    FileName = fileRequest.FileName,
-                    FilePath = filePath,
-                    UserId = fileRequest.UserId
-                });
-
-                await _hub.Clients.All
-                    .SendAsync("UploadSuccess");
             }
             catch (Exception ex)
             {
+                await filesUploadRepository.UpdateProgress(fileRequest.ProcessId, percent, "Failed");
+                await _hub.Clients.All
+                    .SendAsync("ProgressUpdated", new
+                    {
+                        processId = fileRequest.ProcessId,
+                        percentage = percent,
+                        status = "Failed"
+                    }, cancellationToken: stoppingToken);
                 Console.WriteLine($"Błąd podczas zapisu pliku: {ex.Message}");
             }
         }

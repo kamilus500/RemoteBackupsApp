@@ -18,6 +18,18 @@
         <div class="collapse navbar-collapse" id="mainNavbar">
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
 
+                <li class="nav-item me-lg-3">
+                    <a class="btn btn-outline-light fw-bold d-flex align-items-center custom-btn" asp-controller="File" asp-action="Index">
+                        <i class="bi bi-folder2-open me-1"></i> Moje pliki
+                    </a>
+                </li>
+
+                <li>
+                    <a class="btn btn-outline-light fw-bold d-flex align-items-center custom-btn" asp-controller="FileImportPanel" asp-action="Index">
+                        <i class="bi bi-files me-2"></i> Panel importów
+                    </a>
+                </li>
+
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
                        data-bs-toggle="dropdown" aria-expanded="false">
@@ -26,11 +38,6 @@
                         <span class="d-none d-sm-inline">@userName</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end shadow rounded-3 custom-dropdown">
-                        <li>
-                            <a class="dropdown-item d-flex align-items-center" asp-controller="File" asp-action="Panel">
-                                <i class="bi bi-person-circle me-2"></i> Panel importów
-                            </a>
-                        </li>
                         <li>
                             <a class="dropdown-item d-flex align-items-center" asp-controller="Auth" asp-action="ChangePassword">
                                 <i class="bi bi-gear me-2"></i> Zmień hasło
