@@ -1,6 +1,8 @@
-﻿@model IEnumerable<RemoteBackupsApp.Domain.Models.FileDto>
+﻿@using RemoteBackupsApp.Infrastructure.Helpers
+@model IEnumerable<RemoteBackupsApp.Domain.Models.FileDto>
 
 <partial name="/Views/Home/_Navbar.cshtml" />
+
 
 <div class="container my-4">
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 justify-content-center mb-5">
@@ -13,8 +15,8 @@
                     <p class="mb-0 fw-semibold">Załaduj plik</p>
                 </div>
             </div>
-            <form asp-controller="File" asp-action="Upload" method="post" enctype="multipart/form-data" id="uploadForm" style="display:none;">
-                <input type="file" id="fileInput" name="file" onchange="document.getElementById('uploadForm').submit();" />
+            <form enctype="multipart/form-data" id="uploadForm" style="display:none;">
+                <input type="file" id="fileInput" name="file" />
             </form>
         </div>
     </div>
@@ -38,7 +40,7 @@
                         <tr>
                             <td class="text-center">@file.FileName</td>
                             <td class="text-center">@file.FileExtension</td>
-                            <td class="text-center">@(Math.Round(file.FileSize / 1024.0 / 1024.0, 2)) MB</td>
+                            <td class="text-center">@FileHelper.FormatBytes(file.FileSize)</td>
                             <td class="text-center">@file.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
                             <td class="text-center">
                                 <a asp-controller="File" asp-action="Download" asp-route-fileId="@file.FileId" class="btn btn-sm btn-primary">
@@ -55,3 +57,6 @@
         </div>
     }
 </div>
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="~/js/files.js"></script>

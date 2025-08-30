@@ -7,7 +7,7 @@ namespace RemoteBackupsApp.Domain.Models
         public string FileId { get; set; }
         public string UserId { get; set; }
         public string FileName { get; set; }
-        public double FileSize { get; set; }
+        public long FileSize { get; set; }
         public string FileExtension { get; set; }
         public string FilePath { get; set; }
         public DateTime CreatedAt { get; set; }

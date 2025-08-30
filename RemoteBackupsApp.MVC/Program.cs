@@ -9,12 +9,14 @@ builder.Services.AddControllersWithViews()
       ProgressBar = true,
       PositionClass = ToastPositions.TopCenter,
       CloseButton = true,
-      TimeOut = 5000
+      TimeOut = 2000
   });
 
 builder.Services.AddInfrastructure();
 
 var app = builder.Build();
+
+app.AddApplication();
 
 app.UseNToastNotify();
 
@@ -35,6 +37,5 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Auth}/{action=Index}")
     .WithStaticAssets();
-
 
 app.Run();

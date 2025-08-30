@@ -35,25 +35,28 @@ namespace RemoteBackupsApp.MVC.Controllers
         public async Task<IActionResult> Upload(IFormFile file)
         {
             if (file == null || file.Length == 0)
-                return BadRequest("Plik nie został przesłany.");
+                _toastNotification.AddAlertToastMessage("Plik nie został przesłany.");
+
+            var jobId = Guid.NewGuid().ToString();
 
             var request = new FileUploadRequest
             {
                 File = await FileHelper.ConvertToBytesAsync(file),
                 FileName = file.FileName,
-                FileSize = Math.Round((double)file.Length / (1024 * 1024), 2),
+                FileSize = file.Length,
                 CreatedAt = DateTime.UtcNow,
                 FileExtension = Path.GetExtension(file.FileName),
                 FilePath = Path.Combine("UserFiles", _memoryCache.Get<int>("UserId").ToString(), file.FileName),
                 UserId = _memoryCache.Get<int>("UserId").ToString(),
-                TargetFolder = Path.Combine("UserFiles", _memoryCache.Get<int>("UserId").ToString())
+                TargetFolder = Path.Combine("UserFiles", _memoryCache.Get<int>("UserId").ToString()),
+                JobId = jobId
             };
 
             await _fileQueue.EnqueueFileAsync(request);
 
             _toastNotification.AddInfoToastMessage("Ddano plik do kolejki przesyłania.");
 
-            return RedirectToAction("Index");
+            return Ok(new { jobId });
         }
 
         [HttpGet]

@@ -38,19 +38,6 @@ BEGIN
 END
 GO
 
---Sessions
-IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'dbo.Sessions') AND type = 'U')
-BEGIN
-    CREATE TABLE dbo.Sessions
-    (
-        SessionId   UNIQUEIDENTIFIER DEFAULT NEWID() PRIMARY KEY,
-        UserId      INT NOT NULL FOREIGN KEY REFERENCES dbo.Users(UserId) ON DELETE CASCADE,
-        LoginTime   DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
-        ExpireTime  DATETIME2 NOT NULL
-    );
-END
-GO
-
 -- FileAccessLog
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'dbo.FileAccessLog') AND type = 'U')
 BEGIN
@@ -68,10 +55,6 @@ GO
 --Indexes
 IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_Files_UserId' AND object_id = OBJECT_ID('dbo.Files'))
     CREATE INDEX IX_Files_UserId ON dbo.Files(UserId);
-GO
-
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_Sessions_UserId' AND object_id = OBJECT_ID('dbo.Sessions'))
-    CREATE INDEX IX_Sessions_UserId ON dbo.Sessions(UserId);
 GO
 
 IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_FileAccessLog_UserId' AND object_id = OBJECT_ID('dbo.FileAccessLog'))
