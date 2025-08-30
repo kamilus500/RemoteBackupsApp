@@ -17,7 +17,8 @@ BEGIN
         Email        NVARCHAR(255) NOT NULL UNIQUE,
         IsLogged     BIT NOT NULL DEFAULT(0),
         PasswordHash VARBINARY(256) NOT NULL,
-        CreatedAt    DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME()
+        CreatedAt    DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+        IsDeleted    BIT NOT NULL DEFAULT(0)
     );
 END
 GO
@@ -28,12 +29,13 @@ BEGIN
     CREATE TABLE dbo.Files
     (
         FileId        INT IDENTITY(1,1) PRIMARY KEY,
-        UserId        INT NOT NULL FOREIGN KEY REFERENCES dbo.Users(UserId) ON DELETE CASCADE,
+        UserId        INT NOT NULL FOREIGN KEY REFERENCES dbo.Users(UserId),
         FileName      NVARCHAR(255) NOT NULL,
         FileExtension NVARCHAR(10) NULL,
         FileSize      BIGINT NOT NULL,
         FilePath      NVARCHAR(1000) NULL,
-        CreatedAt     DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME()
+        CreatedAt     DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+        IsDeleted    BIT NOT NULL DEFAULT(0)
     );
 END
 GO
@@ -44,10 +46,27 @@ BEGIN
     CREATE TABLE dbo.FileAccessLog
     (
         LogId        INT IDENTITY(1,1) PRIMARY KEY,
-        FileId       INT NULL FOREIGN KEY REFERENCES dbo.Files(FileId) ON DELETE SET NULL,
+        FileId       INT NOT NULL FOREIGN KEY REFERENCES dbo.Files(FileId),
         UserId       INT NOT NULL FOREIGN KEY REFERENCES dbo.Users(UserId),
-        Action       NVARCHAR(50) NOT NULL, -- np. 'DOWNLOAD', 'UPLOAD', 'UPDATE', 'DELETE'
+        Action       NVARCHAR(50) NOT NULL, -- 'DOWNLOAD', 'UPLOAD', 'UPDATE', 'DELETE'
         ActionTime   DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME()
+    );
+END
+GO
+
+-- FileUploadProgress
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'dbo.FileUploadProgress') AND type = 'U')
+BEGIN
+    CREATE TABLE dbo.FileUploadProgress
+    (
+        ProgressId    INT IDENTITY(1,1) PRIMARY KEY,
+        FileId        INT NOT NULL FOREIGN KEY REFERENCES dbo.Files(FileId),
+        UserId        INT NOT NULL FOREIGN KEY REFERENCES dbo.Users(UserId),
+        ProgressPct   DECIMAL(5,2) NOT NULL DEFAULT 0,
+        Status        NVARCHAR(50) NOT NULL DEFAULT N'Pending', -- np. Pending, Uploading, Completed, Failed
+        StartedAt     DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+        UpdatedAt     DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+        CompletedAt   DATETIME2 NULL
     );
 END
 GO
@@ -105,6 +124,47 @@ BEGIN
 END
 GO
 
+--(-99) - Error
+--(-1) - User not found
+--(1) Success
+CREATE OR ALTER PROCEDURE dbo.DeleteUser
+    @UserId INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        UPDATE dbo.Users
+        SET IsDeleted = 1
+        WHERE UserId = @UserId
+          AND IsDeleted = 0;
+
+        IF @@ROWCOUNT = 0
+        BEGIN
+            ROLLBACK TRANSACTION;
+            SELECT -1 AS Result
+            RETURN;
+        END
+
+        COMMIT TRANSACTION;
+
+        SELECT 1 AS Result
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0
+            ROLLBACK TRANSACTION;
+
+        DECLARE @ErrMsg NVARCHAR(4000), @ErrSeverity INT;
+        SELECT @ErrMsg = ERROR_MESSAGE(), @ErrSeverity = ERROR_SEVERITY();
+
+        SELECT -99 AS Result;
+        PRINT @ErrMsg;
+    END CATCH
+END
+GO
+
 --(-99) - SqlError
 --(-1) - User is null
 --(0) - User is logged
@@ -140,9 +200,6 @@ BEGIN
         UPDATE dbo.Users
         SET IsLogged = 1
         WHERE UserId = @UserId;
-
-        INSERT INTO dbo.Sessions (UserId, ExpireTime)
-        VALUES (@UserId, DATEADD(HOUR, 1, SYSUTCDATETIME()));
 
         COMMIT TRANSACTION;
 
@@ -193,9 +250,6 @@ BEGIN
 
         UPDATE dbo.Users
         SET IsLogged = 0
-        WHERE UserId = @UserId;
-
-        DELETE FROM dbo.Sessions
         WHERE UserId = @UserId;
 
         COMMIT TRANSACTION;
@@ -257,6 +311,52 @@ BEGIN
 END
 GO
 
+--(-99) error
+--(-1) User is null
+--(1) Success
+CREATE OR ALTER PROCEDURE dbo.DeleteFile
+    @FileId INT,
+    @UserId INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        UPDATE dbo.Files
+        SET IsDeleted = 1
+        WHERE FileId = @FileId
+          AND IsDeleted = 0;
+
+        IF @@ROWCOUNT = 0
+        BEGIN
+            ROLLBACK TRANSACTION;
+            SELECT -1 AS Result
+            RETURN;
+        END
+
+         INSERT INTO dbo.FileAccessLog (FileId, UserId, Action, ActionTime)
+         VALUES (@FileId, @UserId, 'DELETE', SYSUTCDATETIME());
+
+        COMMIT TRANSACTION;
+
+        SELECT 1;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0
+            ROLLBACK TRANSACTION;
+
+        DECLARE @ErrMsg NVARCHAR(4000), @ErrSeverity INT;
+        SELECT @ErrMsg = ERROR_MESSAGE(), @ErrSeverity = ERROR_SEVERITY();
+
+        SELECT -99 AS Result
+        PRINT @ErrMsg;
+    END CATCH
+END
+GO
+
+
 --Views
 IF NOT EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N'dbo.vwUserFiles'))
 BEGIN
@@ -269,7 +369,8 @@ BEGIN
             FileExtension,
             FileName,
             FileSize,
-            CreatedAt
+            CreatedAt,
+            IsDeleted
         FROM dbo.Files
     ')
 END

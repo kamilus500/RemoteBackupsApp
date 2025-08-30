@@ -19,16 +19,6 @@
 
                 $('#fileName').text(file.name);
                 $('#progressPopup').fadeIn();
-
-                connection.on("ProgressUpdated", function (progress) {
-                    $('#statusText').text(progress.status);
-                    $('#progressBar').val(progress.percentage);
-                });
-
-                connection.on("UploadSuccess", function () {
-                    window.location.reload();
-                    $('#progressPopup').fadeOut();
-                })
             },
             error: function () {
                 

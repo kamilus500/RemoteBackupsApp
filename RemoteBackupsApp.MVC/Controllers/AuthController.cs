@@ -27,7 +27,7 @@ namespace RemoteBackupsApp.MVC.Controllers
         {
             if (_memoryCache.TryGetValue("IsLogged", out bool isLogged) && isLogged)
             {
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "File");
             }
 
             return View("Index");
@@ -62,7 +62,7 @@ namespace RemoteBackupsApp.MVC.Controllers
                 _memoryCache.Set("UserId", result.UserId);
                 _memoryCache.Set("IsLogged", true);
 
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "File");
             }
 
             return RedirectToAction("Index");
@@ -89,9 +89,8 @@ namespace RemoteBackupsApp.MVC.Controllers
 
                 if (result == 1)
                 {
-                    _memoryCache.Set("IsLogged", true);
-                    _toastNotification.AddSuccessToastMessage("Zalogowany!");
-                    return RedirectToAction("Index", "Home");
+                    _toastNotification.AddSuccessToastMessage("Zarejestrowany!");
+                    return RedirectToAction("Index", "Auth");
                 }
             }
 

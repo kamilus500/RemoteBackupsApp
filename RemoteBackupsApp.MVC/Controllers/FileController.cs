@@ -81,9 +81,29 @@ namespace RemoteBackupsApp.MVC.Controllers
         {
             var userId = _memoryCache.Get<int>("UserId");
 
-            await _fileRepository.Delete(fileId,userId);
+            await _fileRepository.Delete(fileId, userId);
+
+            var filePath = await _fileRepository.GetFilePath(fileId);
+
+            if (string.IsNullOrWhiteSpace(filePath))
+            {
+                _toastNotification.AddAlertToastMessage("Nie znaleziono pliku.");
+                return RedirectToAction("Index");
+            }
+
+            if (System.IO.File.Exists(filePath))
+            {
+                System.IO.File.Delete(filePath);
+            }
+            else
+            {
+                _toastNotification.AddAlertToastMessage(
+                    "Plik został usunięty z bazy danych, ale nie znaleziono go na dysku."
+                );
+            }
 
             return RedirectToAction("Index");
         }
+
     }
 }

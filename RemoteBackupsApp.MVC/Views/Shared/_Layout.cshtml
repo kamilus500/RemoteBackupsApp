@@ -28,6 +28,16 @@
         let connection = new signalR.HubConnectionBuilder()
             .withUrl("/uploadHub")
             .build();
+
+        connection.on("ProgressUpdated", function (progress) {
+            $('#statusText').text(progress.status);
+            $('#progressBar').val(progress.percentage);
+        });
+
+        connection.on("UploadSuccess", function () {
+            window.location.reload();
+            $('#progressPopup').fadeOut();
+        })
     </script>
 </body>
 </html>

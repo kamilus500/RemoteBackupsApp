@@ -33,7 +33,7 @@ namespace RemoteBackupsApp.Infrastructure.Repositories
         public async Task<IEnumerable<FileDto>> GetFiles(int userId)
 
             => await _sqlService.QueryAsync<FileDto>(
-                    "SELECT * FROM dbo.vwUserFiles WHERE UserId = @UserId",
+                    "SELECT * FROM dbo.vwUserFiles WHERE UserId = @UserId And IsDeleted = 0",
                     new { UserId = userId },
                     CommandType.Text
                 );
