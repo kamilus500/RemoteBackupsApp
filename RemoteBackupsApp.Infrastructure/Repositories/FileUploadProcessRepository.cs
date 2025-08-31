@@ -23,12 +23,31 @@ namespace RemoteBackupsApp.Infrastructure.Repositories
             return await _sqlService.ExecuteAsync("dbo.CreateFileUploadRequest", parameters, CommandType.StoredProcedure);
         }
 
-        public async Task<IEnumerable<FileUploadProgress>> GetByUserId(int userId)
-            => await _sqlService.QueryAsync<FileUploadProgress>(
-                    "SELECT * FROM dbo.vwFileUploadProgress WHERE UserId = @UserId Order By CreatedAt desc",
-                    new { UserId = userId },
-                    CommandType.Text
-                );
+        public async Task<IEnumerable<FileUploadProgress>> GetByUserId(
+            int userId, int pageNumber, int pageSize)
+        {
+            if (pageNumber < 1) pageNumber = 1;
+            if (pageSize < 1) pageSize = 20;
+
+            var sql = @"
+                        SELECT *
+                        FROM dbo.vwFileUploadProgress
+                        WHERE UserId = @UserId
+                        ORDER BY CreatedAt DESC, UserId
+                        OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
+                    ";
+
+            return await _sqlService.QueryAsync<FileUploadProgress>(
+                sql,
+                new
+                {
+                    UserId = userId,
+                    Offset = (pageNumber - 1) * pageSize,
+                    PageSize = pageSize
+                },
+                CommandType.Text
+            );
+        }
 
         public async Task UpdateProgress(int progressId, decimal progressPct, string status)
         {
@@ -40,6 +59,19 @@ namespace RemoteBackupsApp.Infrastructure.Repositories
             };
 
             await _sqlService.ExecuteAsync("dbo.UpdateFileUploadRequest", parameters, CommandType.StoredProcedure);
+        }
+
+        public async Task<int> GetFilesUploadsCount(int userId)
+        {
+            var sql = @"SELECT COUNT(*) 
+                FROM dbo.vwFileUploadProgress 
+                WHERE UserId = @UserId";
+
+            return await _sqlService.QuerySingleAsync<int>(
+                sql,
+                new { UserId = userId },
+                CommandType.Text
+            );
         }
     }
 }

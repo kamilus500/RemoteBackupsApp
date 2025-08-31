@@ -6,6 +6,7 @@ namespace RemoteBackupsApp.Domain.Interfaces
     {
         Task<int> Create(int userId, int fileId);
         Task UpdateProgress(int progressId, decimal progressPct, string status);
-        Task<IEnumerable<FileUploadProgress>> GetByUserId(int userId);
+        Task<IEnumerable<FileUploadProgress>> GetByUserId(int userId, int pageNumber, int pageSize);
+        Task<int> GetFilesUploadsCount(int userId);
     }
 }

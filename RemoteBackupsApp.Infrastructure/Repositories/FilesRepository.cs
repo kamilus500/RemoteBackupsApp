@@ -30,13 +30,30 @@ namespace RemoteBackupsApp.Infrastructure.Repositories
                             CommandType.Text);
             
 
-        public async Task<IEnumerable<FileDto>> GetFiles(int userId)
+        public async Task<IEnumerable<FileDto>> GetFiles(int userId, int pageNumber, int pageSize)
+        {
+            if (pageNumber < 1) pageNumber = 1;
+            if (pageSize < 1) pageSize = 5;
 
-            => await _sqlService.QueryAsync<FileDto>(
-                    "SELECT * FROM dbo.vwUserFiles WHERE UserId = @UserId And IsDeleted = 0 ORDER BY CreatedAt Desc",
-                    new { UserId = userId },
-                    CommandType.Text
-                );
+            var sql = @"
+                        SELECT *
+                        FROM dbo.vwUserFiles
+                        WHERE UserId = @UserId AND IsDeleted = 0
+                        ORDER BY CreatedAt, FileId DESC
+                        OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
+                    ";
+
+            return await _sqlService.QueryAsync<FileDto>(
+                sql,
+                new
+                {
+                    UserId = userId,
+                    Offset = (pageNumber - 1) * pageSize,
+                    PageSize = pageSize
+                },
+                CommandType.Text
+            );
+        }
 
         public async Task<int> SaveFile(FileDto file)
         {
@@ -50,6 +67,19 @@ namespace RemoteBackupsApp.Infrastructure.Repositories
             };
 
             return await _sqlService.ExecuteAsync("dbo.InsertFile", parameters, CommandType.StoredProcedure);
+        }
+
+        public async Task<int> GetFilesCount(int userId)
+        {
+            var sql = @"SELECT COUNT(*) 
+                FROM dbo.vwUserFiles 
+                WHERE UserId = @UserId AND IsDeleted = 0";
+
+            return await _sqlService.QuerySingleAsync<int>(
+                sql,
+                new { UserId = userId },
+                CommandType.Text
+            );
         }
     }
 }

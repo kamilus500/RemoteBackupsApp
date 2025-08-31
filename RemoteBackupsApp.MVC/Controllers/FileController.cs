@@ -5,6 +5,7 @@ using RemoteBackupsApp.Domain.Interfaces;
 using RemoteBackupsApp.Domain.Models;
 using RemoteBackupsApp.Infrastructure.Helpers;
 using RemoteBackupsApp.Infrastructure.Repositories;
+using RemoteBackupsApp.MVC.Models.PageResult;
 
 namespace RemoteBackupsApp.MVC.Controllers
 {
@@ -27,13 +28,22 @@ namespace RemoteBackupsApp.MVC.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 10)
         {
             var userId = _memoryCache.Get<int>("UserId");
 
-            var files = await _fileRepository.GetFiles(userId);
+            var files = await _fileRepository.GetFiles(userId, pageNumber, pageSize);
+            var totalCount = await _fileRepository.GetFilesCount(userId);
 
-            return View(files);
+            var model = new PagedResult<FileDto>
+            {
+                Items = files,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalCount = totalCount
+            };
+
+            return View(model);
         }
 
         [HttpPost]
