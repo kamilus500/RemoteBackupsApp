@@ -4,7 +4,6 @@
     {
         public byte[] File { get; set; }
         public string FileName { get; set; }
-        public string TargetFolder { get; set; } = "UploadedFiles";
         public int UserId { get; set; }
         public string FileExtension { get; set; }
         public long FileSize { get; set; }

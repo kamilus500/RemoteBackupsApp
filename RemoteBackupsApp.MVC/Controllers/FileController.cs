@@ -56,18 +56,19 @@ namespace RemoteBackupsApp.MVC.Controllers
                 FileSize = file.Length,
                 FileExtension = Path.GetExtension(file.FileName),
                 FilePath = targetPath,
-                UserId = userId,
-                TargetFolder = Path.Combine("UserFiles", _memoryCache.Get<int>("UserId").ToString())
+                UserId = userId
             };
 
-            var fileId = await _fileRepository.SaveFile(new FileDto()
+            var newFile = new FileDto()
             {
-                FileSize = request.FileSize,
-                FileExtension = Path.GetExtension(request.FileName),
-                FileName = request.FileName,
+                FileSize = file.Length,
+                FileExtension = Path.GetExtension(file.FileName),
+                FileName = file.FileName,
                 FilePath = targetPath,
-                UserId = request.UserId
-            });
+                UserId = userId
+            };
+
+            var fileId = await _fileRepository.SaveFile(newFile);
 
             var processId = await _fileUploadProcessRepository.Create(userId, fileId);
 

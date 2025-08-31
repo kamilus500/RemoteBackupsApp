@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using RemoteBackupsApp.Domain.Interfaces;
+using RemoteBackupsApp.Domain.Models;
 using RemoteBackupsApp.Infrastructure.Hubs;
 
 public class FileBackgroundService : BackgroundService
@@ -12,12 +13,18 @@ public class FileBackgroundService : BackgroundService
     private readonly IHubContext<UploadHub> _hub;
     private readonly IWebHostEnvironment _env;
 
-    public FileBackgroundService(IFileQueueService fileQueue, IHubContext<UploadHub> hub, IServiceProvider services, IWebHostEnvironment env)
+    private const int BufferSize = 6 * 1024;
+
+    public FileBackgroundService(
+        IFileQueueService fileQueue,
+        IHubContext<UploadHub> hub,
+        IServiceProvider services,
+        IWebHostEnvironment env)
     {
         _services = services ?? throw new ArgumentNullException(nameof(services));
         _fileQueue = fileQueue ?? throw new ArgumentNullException(nameof(fileQueue));
-        _env = env ?? throw new ArgumentNullException(nameof(env));
         _hub = hub ?? throw new ArgumentNullException(nameof(hub));
+        _env = env ?? throw new ArgumentNullException(nameof(env));
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -26,73 +33,71 @@ public class FileBackgroundService : BackgroundService
 
         await foreach (var fileRequest in reader.ReadAllAsync(stoppingToken))
         {
-            int percent = 0;
-            using var scope = _services.CreateScope();
-            var filesUploadRepository = scope.ServiceProvider.GetRequiredService<IFileUploadProcessRepository>();
-
-            try
-            {
-                var uploadPath = Path.Combine(_env.WebRootPath, "uploads") + $"\\{fileRequest.UserId}";
-
-                if (!Directory.Exists(uploadPath))
-                    Directory.CreateDirectory(uploadPath);
-
-                var filePath = Path.Combine(uploadPath, fileRequest.FileName);
-
-                long totalBytes = fileRequest.File.Length;
-                long writtenBytes = 0;
-                int bufferSize = 1024*6;
-                byte[] buffer = new byte[bufferSize];
-
-                using (var stream = new MemoryStream(fileRequest.File))
-                using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None))
-                {
-                    int read;
-                    while ((read = await stream.ReadAsync(buffer, 0, buffer.Length, stoppingToken)) > 0)
-                    {
-                        await fileStream.WriteAsync(buffer, 0, read, stoppingToken);
-
-                        writtenBytes += read;
-                        percent = (int)((writtenBytes * 100.0) / totalBytes);
-                        Thread.Sleep(20);
-
-                        await filesUploadRepository.UpdateProgress(fileRequest.ProcessId, percent, "Uploading");
-
-                        await _hub.Clients.All
-                            .SendAsync("ProgressUpdated", new
-                            {
-                                processId = fileRequest.ProcessId,
-                                percentage = percent,
-                                status = "Uploading"
-                            }, cancellationToken: stoppingToken);
-                    }
-                }
-
-                await filesUploadRepository.UpdateProgress(fileRequest.ProcessId, 100, "Completed");
-
-                await _hub.Clients.All
-                    .SendAsync("ProgressUpdated", new
-                    {
-                        processId = fileRequest.ProcessId,
-                        percentage = 100,
-                        status = "Completed",
-                        date = DateTime.UtcNow
-                    }, cancellationToken: stoppingToken);
-
-                Console.WriteLine($"Plik zapisany: {filePath}");
-            }
-            catch (Exception ex)
-            {
-                await filesUploadRepository.UpdateProgress(fileRequest.ProcessId, percent, "Failed");
-                await _hub.Clients.All
-                    .SendAsync("ProgressUpdated", new
-                    {
-                        processId = fileRequest.ProcessId,
-                        percentage = percent,
-                        status = "Failed"
-                    }, cancellationToken: stoppingToken);
-                Console.WriteLine($"Błąd podczas zapisu pliku: {ex.Message}");
-            }
+            await ProcessFileAsync(fileRequest, stoppingToken);
         }
+    }
+
+    private async Task ProcessFileAsync(FileUploadRequest fileRequest, CancellationToken stoppingToken)
+    {
+        using var scope = _services.CreateScope();
+        var filesUploadRepository = scope.ServiceProvider.GetRequiredService<IFileUploadProcessRepository>();
+
+        var uploadDir = Path.Combine(_env.WebRootPath, "uploads", fileRequest.UserId.ToString());
+
+        if (!Directory.Exists(uploadDir))
+            Directory.CreateDirectory(uploadDir);
+
+        var filePath = Path.Combine(uploadDir, fileRequest.FileName);
+
+        int percent = 0;
+
+        try
+        {
+            long totalBytes = fileRequest.File.Length;
+            long writtenBytes = 0;
+
+            using var stream = new MemoryStream(fileRequest.File);
+            using var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None);
+
+            var buffer = new byte[BufferSize];
+            int read;
+
+            while ((read = await stream.ReadAsync(buffer.AsMemory(0, buffer.Length), stoppingToken)) > 0)
+            {
+                await fileStream.WriteAsync(buffer.AsMemory(0, read), stoppingToken);
+
+                writtenBytes += read;
+                percent = (int)(writtenBytes * 100.0 / totalBytes);
+
+                await UpdateProgressAsync(filesUploadRepository, fileRequest.ProcessId, percent, "Uploading", stoppingToken);
+
+                await Task.Delay(50, stoppingToken);    //For simulation of long upload
+            }
+
+            await UpdateProgressAsync(filesUploadRepository, fileRequest.ProcessId, 100, "Completed", stoppingToken, true, fileRequest.FileName);
+
+            Console.WriteLine($"Plik zapisany: {filePath}");
+        }
+        catch (Exception ex)
+        {
+            await UpdateProgressAsync(filesUploadRepository, fileRequest.ProcessId, percent, "Failed", stoppingToken, fileName: fileRequest.FileName);
+            Console.WriteLine($"Błąd podczas zapisu pliku: {ex.Message}");
+        }
+    }
+
+    private async Task UpdateProgressAsync(
+        IFileUploadProcessRepository repository,
+        int processId,
+        int percent,
+        string status,
+        CancellationToken cancellationToken,
+        bool completed = false,
+        string? fileName = null)
+    {
+        await repository.UpdateProgress(processId, percent, status);
+
+        var updateProgress = new UpdateProgress(processId, percent, status, completed ? DateTime.UtcNow : null, fileName);
+
+        await _hub.Clients.All.SendAsync("ProgressUpdated", updateProgress, cancellationToken: cancellationToken);
     }
 }
