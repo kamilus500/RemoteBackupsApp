@@ -47,11 +47,14 @@ namespace RemoteBackupsApp.MVC.Controllers
         }
 
         [HttpPost]
+        [RequestSizeLimit(100 * 1024 * 1024)]
         public async Task<IActionResult> Upload(IFormFile file)
         {
             if (file == null || file.Length == 0)
+            {
                 _toastNotification.AddAlertToastMessage("Plik nie został przesłany.");
-
+                return RedirectToAction("Index");
+            }
 
             var userId = _memoryCache.Get<int>("UserId");
 
@@ -86,7 +89,7 @@ namespace RemoteBackupsApp.MVC.Controllers
 
             await _fileQueue.EnqueueFileAsync(request);
 
-            _toastNotification.AddInfoToastMessage("Ddano plik do kolejki przesyłania.");
+            _toastNotification.AddInfoToastMessage("Dodano plik do kolejki przesyłania.");
 
             return RedirectToAction("Index");
         }

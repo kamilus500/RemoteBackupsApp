@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
 using RemoteBackupsApp.Domain.Interfaces;
 using RemoteBackupsApp.Infrastructure.Hubs;
@@ -20,6 +21,11 @@ namespace RemoteBackupsApp.Infrastructure
 
             services.AddSingleton<IFileQueueService, FileQueueService>();
             services.AddHostedService<FileBackgroundService>();
+
+            services.Configure<FormOptions>(options =>
+            {
+                options.MultipartBodyLengthLimit = 100 * 1024 * 1024;
+            });
         }
 
         public static void AddApplication(this WebApplication app)

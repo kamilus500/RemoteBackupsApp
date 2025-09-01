@@ -14,6 +14,11 @@ builder.Services.AddControllersWithViews()
 
 builder.Services.AddInfrastructure();
 
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = 100 * 1024 * 1024; // 100 MB
+});
+
 var app = builder.Build();
 
 app.AddApplication();

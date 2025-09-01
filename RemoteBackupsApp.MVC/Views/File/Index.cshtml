@@ -5,13 +5,19 @@
 <partial name="/Views/Home/_Navbar.cshtml" />
 
 <div class="container my-4">
+    <div id="loadingSpinner" class="d-none text-center my-3">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Ładowanie...</span>
+        </div>
+    </div>
+
     <div class="text-center mb-3">
         <button type="button" class="btn btn-primary btn-sm px-3"
                 onclick="document.getElementById('fileInput').click();">
             <i class="bi bi-plus-lg me-1"></i> Załaduj plik
         </button>
-        <form asp-controller="File" asp-action="Upload" enctype="multipart/form-data" method="post" id="uploadForm" style="display:none;">
-            <input type="file" id="fileInput" name="file" onchange="document.getElementById('uploadForm').submit();" />
+        <form enctype="multipart/form-data" method="post" id="uploadForm" style="display:none;">
+            <input type="file" id="fileInput" name="file" />
         </form>
     </div>
 
@@ -78,3 +84,4 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="~/js/file.js"></script>
