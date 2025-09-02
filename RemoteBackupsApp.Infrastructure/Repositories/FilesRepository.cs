@@ -39,7 +39,7 @@ namespace RemoteBackupsApp.Infrastructure.Repositories
                         SELECT *
                         FROM dbo.vwUserFiles
                         WHERE UserId = @UserId AND IsDeleted = 0
-                        ORDER BY CreatedAt, FileId DESC
+                        ORDER BY CreatedAt DESC
                         OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
                     ";
 

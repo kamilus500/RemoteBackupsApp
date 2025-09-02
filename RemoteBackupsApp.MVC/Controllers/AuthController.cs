@@ -46,7 +46,7 @@ namespace RemoteBackupsApp.MVC.Controllers
 
             if (result.Result == -1)
             {
-                _toastNotification.AddErrorToastMessage("Użytkownik nie istnieje!");
+                _toastNotification.AddErrorToastMessage("Złe hasło!");
                 return RedirectToAction("Index");
             }
 
@@ -114,6 +114,40 @@ namespace RemoteBackupsApp.MVC.Controllers
             }
 
             return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ChangePassword() => View();
+
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var userId = _memoryCache.Get<int>("UserId");
+
+                var result = await _authRepository.ChangePasswordAsync(userId, model.CurrentPassword, model.NewPassword);
+
+                if (result == -99)
+                {
+                    _toastNotification.AddErrorToastMessage("Coś poszło nie tak!");
+                    return RedirectToAction("ChangePassword", "Auth");
+                }
+
+                if (result == -1)
+                {
+                    _toastNotification.AddErrorToastMessage("Hasła sie nie zgadzaja");
+                    return RedirectToAction("ChangePassword", "Auth");
+                }
+
+                if (result == 1)
+                {
+                    _toastNotification.AddSuccessToastMessage("Hasło zostało zmienione pomyślnie. Zaloguj się ponownie.");
+                    return RedirectToAction("Index", "File");
+                }
+            }
+
+            return RedirectToAction("ChangePassword", "File");
         }
     }
 }

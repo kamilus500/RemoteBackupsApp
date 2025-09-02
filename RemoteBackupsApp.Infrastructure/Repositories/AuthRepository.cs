@@ -38,5 +38,17 @@ namespace RemoteBackupsApp.Infrastructure.Repositories
                 new { Username = userName, Email = email, PasswordHash = passwordBytes },
                 CommandType.StoredProcedure);
         }
+
+        public async Task<int> ChangePasswordAsync(int userId, string oldPassword, string newPassword)
+        {
+            var oldPasswordBytes = System.Text.Encoding.UTF8.GetBytes(oldPassword);
+            var newPasswordBytes = System.Text.Encoding.UTF8.GetBytes(newPassword);
+
+            return await _sqlService.QuerySingleAsync<int>(
+                "dbo.ChangePassword",
+                new { UserId = userId, OldPasswordHash = oldPasswordBytes, NewPasswordHash = newPasswordBytes },
+                CommandType.StoredProcedure);
+        }
+
     }
 }

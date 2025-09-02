@@ -446,6 +446,55 @@ BEGIN
 END
 GO
 
+--(-99) SqlError
+--(-1) not same passwords
+--(1) success
+CREATE OR ALTER PROCEDURE dbo.ChangePassword
+    @UserId       INT,
+    @OldPasswordHash VARBINARY(256),
+    @NewPasswordHash VARBINARY(256)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @ExistingUserId  INT;
+
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        SELECT @ExistingUserId = UserId
+        FROM dbo.Users
+        WHERE UserId = @UserId
+          AND PasswordHash = @OldPasswordHash
+          AND IsDeleted = 0;
+
+        IF @ExistingUserId IS NULL
+        BEGIN
+            ROLLBACK TRANSACTION;
+            SELECT -1 AS Result;
+            RETURN;
+        END
+
+        UPDATE dbo.Users
+        SET PasswordHash = @NewPasswordHash
+        WHERE UserId = @UserId;
+
+        COMMIT TRANSACTION;
+
+        SELECT 1 AS Result
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0
+            ROLLBACK TRANSACTION;
+
+        DECLARE @ErrMsg NVARCHAR(4000), @ErrSeverity INT;
+        SELECT @ErrMsg = ERROR_MESSAGE(), @ErrSeverity = ERROR_SEVERITY();
+
+        SELECT -99 AS Result;
+    END CATCH
+END
+GO
+
 
 --Views
 IF NOT EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N'dbo.vwUserFiles'))
