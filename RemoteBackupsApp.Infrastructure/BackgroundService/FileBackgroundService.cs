@@ -71,17 +71,14 @@ public class FileBackgroundService : BackgroundService
 
                 await UpdateProgressAsync(filesUploadRepository, fileRequest.ProcessId, percent, "Uploading", stoppingToken);
 
-                //await Task.Delay(50, stoppingToken);    //For simulation of long upload
+                await Task.Delay(50, stoppingToken);    //For simulation of long upload
             }
 
             await UpdateProgressAsync(filesUploadRepository, fileRequest.ProcessId, 100, "Completed", stoppingToken, true, fileRequest.FileName);
-
-            Console.WriteLine($"Plik zapisany: {filePath}");
         }
         catch (Exception ex)
         {
             await UpdateProgressAsync(filesUploadRepository, fileRequest.ProcessId, percent, "Failed", stoppingToken, fileName: fileRequest.FileName);
-            Console.WriteLine($"Błąd podczas zapisu pliku: {ex.Message}");
         }
     }
 

@@ -81,5 +81,15 @@ namespace RemoteBackupsApp.Infrastructure.Repositories
                 CommandType.Text
             );
         }
+
+        public async Task<int> CheckFileUploadStatus(int fileId)
+        {
+            var parameters = new
+            {
+                FileId = fileId
+            };
+
+            return await _sqlService.ExecuteAsync("dbo.CheckFileUploadStatus", parameters, CommandType.StoredProcedure);
+        }
     }
 }

@@ -96,6 +96,13 @@ namespace RemoteBackupsApp.MVC.Controllers
         [HttpGet]
         public async Task<IActionResult> Download(int fileId)
         {
+            var uploadStatus = await _fileRepository.CheckFileUploadStatus(fileId);
+            if (uploadStatus == 0)
+            {
+                _toastNotification.AddErrorToastMessage("Plik nie został jeszcze wgrany.");
+                return RedirectToAction("Index");
+            }
+
             var filePath = await _fileRepository.GetFilePath(fileId);
 
             if (string.IsNullOrEmpty(filePath) || !System.IO.File.Exists(filePath))

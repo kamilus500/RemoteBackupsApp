@@ -22,6 +22,7 @@
                 },
                 complete: function () {
                     $("#loadingSpinner").addClass("d-none");
+                    window.location.reload();
                 }
             });
         }
