@@ -46,6 +46,7 @@ namespace RemoteBackupsApp.MVC.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [RequestSizeLimit(100 * 1024 * 1024)]
         public async Task<IActionResult> Upload(IFormFile file)
         {

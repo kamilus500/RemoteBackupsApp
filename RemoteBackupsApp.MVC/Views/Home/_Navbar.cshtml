@@ -4,7 +4,7 @@
     string userName = memoryCache.Get<string>("Username") ?? "Użytkownik";
     var nonce = Context.Items["ScriptNonce"]?.ToString();
 }
-
+@Html.AntiForgeryToken()
 <nav class="navbar navbar-expand-lg navbar-dark custom-navbar shadow-sm">
     <div class="container-fluid">
         <a class="navbar-brand fw-bold d-flex align-items-center" asp-controller="File" asp-action="Index">

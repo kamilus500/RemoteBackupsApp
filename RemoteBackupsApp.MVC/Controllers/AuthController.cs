@@ -34,6 +34,7 @@ namespace RemoteBackupsApp.MVC.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginRegisterViewModel viewModel)
         {
             var result = await _authRepository.LoginAsync(viewModel.Username, viewModel.Password);
@@ -69,6 +70,7 @@ namespace RemoteBackupsApp.MVC.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(LoginRegisterViewModel viewModel)
         {
             if (ModelState.IsValid)
@@ -99,6 +101,7 @@ namespace RemoteBackupsApp.MVC.Controllers
 
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout(string userName)
         {
             if (ModelState.IsValid)
@@ -120,6 +123,7 @@ namespace RemoteBackupsApp.MVC.Controllers
         public async Task<IActionResult> ChangePassword() => View();
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
         {
             if (ModelState.IsValid)
