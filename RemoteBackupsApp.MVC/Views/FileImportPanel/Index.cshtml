@@ -2,6 +2,10 @@
 @using RemoteBackupsApp.MVC.Models.PageResult
 @model PagedResult<FileUploadProgress>
 
+@{
+    var nonce = Context.Items["ScriptNonce"]?.ToString();
+}
+
 <partial name="/Views/Home/_Navbar.cshtml" />
 
 <div class="container my-4">
@@ -23,19 +27,19 @@
                     @foreach (var item in Model.Items)
                     {
                         <tr>
-                            <td class="text-center text-truncate" style="max-width: 180px;">
+                            <td class="text-center text-truncate fileupload-filename">
                                 @item.FileName
                             </td>
                             <td class="text-center">
-                                <div class="progress" style="height: 20px; min-width: 100px;">
+                                <div class="progress">
                                     <div class="progress-bar 
                                                 @(item.Status == "Completed" ? "bg-success" : 
-                                                  item.Status == "Failed" ? "bg-danger" : "bg-info")" 
-                                         role="progressbar" 
-                                         style="width: @item.ProgressPct%;" 
-                                         aria-valuenow="@item.ProgressPct" 
-                                         aria-valuemin="0" aria-valuemax="100"
-                                         id="process-@item.ProgressId">
+                                                    item.Status == "Failed" ? "bg-danger" : "bg-info")" 
+                                            role="progressbar"
+                                            data-pct="@item.ProgressPct"
+                                            aria-valuenow="@item.ProgressPct" 
+                                            aria-valuemin="0" aria-valuemax="100"
+                                            id="process-@item.ProgressId">
                                         @item.ProgressPct%
                                     </div>
                                 </div>
@@ -85,4 +89,4 @@
     }
 </div>
 
-<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.0.min.js" nonce="@nonce"></script>

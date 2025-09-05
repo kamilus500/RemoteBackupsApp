@@ -1,5 +1,6 @@
 using NToastNotify;
 using RemoteBackupsApp.Infrastructure;
+using RemoteBackupsApp.Infrastructure.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,8 @@ builder.WebHost.ConfigureKestrel(options =>
 });
 
 var app = builder.Build();
+
+app.UseMiddleware<CspNonceMiddleware>();
 
 app.AddApplication();
 

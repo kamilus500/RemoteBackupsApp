@@ -4,6 +4,13 @@ $(document).ready(function () {
         .withUrl("/uploadHub")
         .build();
 
+    $(".progress-bar ").each(function () {
+        const pct = $(this).data("pct");
+        if (pct !== undefined) {
+            $(this).css("width", pct + "%");
+        }
+    });
+
     connection.on("UploadSuccess", function () {
 
     })
@@ -12,10 +19,10 @@ $(document).ready(function () {
         let $progressBar = $("#process-" + data.processId);
         if ($progressBar.length === 0) return;
 
-        $progressBar.css("width", data.percent + "%");
+        $progressBar.attr("data-pct", data.percent);
+        $progressBar[0].style.width = data.percent + "%";
 
         $progressBar.attr("aria-valuenow", data.percent);
-
         $progressBar.text(data.percent + "%");
 
         $progressBar.removeClass("bg-success bg-info bg-danger");
@@ -31,8 +38,8 @@ $(document).ready(function () {
             $progressCompleteDate.text(completedAt.toISOString().slice(0, 16).replace("T", " "));
 
             showPopup(`<i class="bi bi-info-circle-fill text-primary"></i> Plik ${data.fileName} załadowany pomyślnie`);
-
-        } else if (data.status === "Failed") {
+        }
+        else if (data.status === "Failed") {
             $progressBar.addClass("bg-danger");
             $progressBar.text("Failed");
             showPopup(`<i class="bi bi-info-circle-fill text-primary"></i> Plik ${data.fileName} nie został załadowany pomyślnie`);
@@ -41,6 +48,7 @@ $(document).ready(function () {
             $progressBar.addClass("bg-info");
         }
     });
+
 
     connection.start()
         .then(() => console.log("SignalR connected"))

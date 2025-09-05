@@ -2,6 +2,7 @@
 @inject IMemoryCache memoryCache;
 @{
     string userName = memoryCache.Get<string>("Username") ?? "Użytkownik";
+    var nonce = Context.Items["ScriptNonce"]?.ToString();
 }
 
 <nav class="navbar navbar-expand-lg navbar-dark custom-navbar shadow-sm">
@@ -34,7 +35,7 @@
                     <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
                        data-bs-toggle="dropdown" aria-expanded="false">
                         <img src="https://ui-avatars.com/api/?name=@userName&background=0D6EFD&color=fff&size=32"
-                             alt="avatar" class="rounded-circle me-2" />
+                             alt="avatar" class="rounded-circle me-2" none="@nonce" />
                         <span class="d-none d-sm-inline">@userName</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end shadow rounded-3 custom-dropdown">

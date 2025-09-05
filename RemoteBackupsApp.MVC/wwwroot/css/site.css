@@ -3,6 +3,15 @@
     border: none;
 }
 
+.background-section {
+    background: linear-gradient(135deg, #0d6efd, #6610f2);
+}
+
+.card-styling {
+    max-width: 450px;
+    border-radius: 1rem;
+}
+
 .nav-tabs .nav-link {
     font-weight: 500;
     font-size: 1rem;
@@ -81,6 +90,11 @@
     width: 100% !important;
 }
 
+.progress {
+    height: 20px;
+    min-width: 100px;
+}
+
 .progress-bar {
     text-align: center;
 }
@@ -122,3 +136,22 @@
     border-width: .6rem;
 }
 
+/*Change password site*/
+.change-password-container {
+    min-height: 80vh;
+}
+
+/*Forms*/
+#uploadForm {
+    display:none;
+}
+
+/*File*/
+.file-filename {
+    max-width: 200px;
+}
+
+/*File Upload*/
+.fileupload-filename {
+    max-width: 180px;
+}

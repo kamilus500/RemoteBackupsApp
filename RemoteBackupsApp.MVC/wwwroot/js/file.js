@@ -1,4 +1,8 @@
 ﻿$(document).ready(function () {
+    $(".loading-file-btn").on("click", function () {
+        $("#fileInput").trigger("click");
+    });
+
     $("#fileInput").on("change", function () {
         debugger;
         if (this.files.length > 0) {

@@ -1,7 +1,9 @@
 ﻿@using RemoteBackupsApp.Infrastructure.Helpers
 @using RemoteBackupsApp.MVC.Models.PageResult
 @model PagedResult<RemoteBackupsApp.Domain.Models.FileDto>
-
+@{
+    var nonce = Context.Items["ScriptNonce"]?.ToString();
+}
 <partial name="/Views/Home/_Navbar.cshtml" />
 
 <div class="container my-4">
@@ -12,15 +14,13 @@
     </div>
 
     <div class="text-center mb-3">
-        <button type="button" class="btn btn-primary btn-sm px-3"
-                onclick="document.getElementById('fileInput').click();">
+        <button type="button" class="btn btn-primary btn-sm px-3 loading-file-btn">
             <i class="bi bi-plus-lg me-1"></i> Załaduj plik
         </button>
-        <form enctype="multipart/form-data" method="post" id="uploadForm" style="display:none;">
+        <form enctype="multipart/form-data" method="post" id="uploadForm">
             <input type="file" id="fileInput" name="file" />
         </form>
     </div>
-
 
     @if (Model.Items.Any())
     {
@@ -39,7 +39,7 @@
                     @foreach (var file in Model.Items)
                     {
                         <tr>
-                            <td class="text-center text-truncate" style="max-width: 200px;">@file.FileName</td>
+                            <td class="text-center text-truncate file-filename">@file.FileName</td>
                             <td class="text-center">@file.FileExtension</td>
                             <td class="text-center">@FileHelper.FormatBytes(file.FileSize)</td>
                             <td class="text-center">@file.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
@@ -83,5 +83,5 @@
     }
 </div>
 
-<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-<script src="~/js/file.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.0.min.js" nonce="@nonce"></script>
+<script src="~/js/file.js" nonce="@nonce"></script>
