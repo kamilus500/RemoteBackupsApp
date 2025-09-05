@@ -4,7 +4,6 @@
     });
 
     $("#fileInput").on("change", function () {
-        debugger;
         if (this.files.length > 0) {
             var formData = new FormData($("#uploadForm")[0]);
 
