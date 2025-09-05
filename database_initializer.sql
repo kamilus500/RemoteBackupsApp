@@ -538,3 +538,38 @@ BEGIN
     ')
 END
 GO
+
+--(-99) - SqlError
+--(0)   - Not completed
+--(1)   - Completed
+CREATE OR ALTER PROCEDURE dbo.CheckFileUploadStatus
+    @FileId INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @IsCompleted BIT = 0;
+
+    BEGIN TRY
+        IF EXISTS (
+            SELECT 1
+            FROM dbo.FileUploadProgress
+            WHERE FileId = @FileId
+              AND ProgressPct = 100.00
+              AND Status = N'Completed'
+        )
+        BEGIN
+            SET @IsCompleted = 1;
+        END
+
+        SELECT @IsCompleted AS Result;
+    END TRY
+    BEGIN CATCH
+        DECLARE @ErrMsg NVARCHAR(4000), @ErrSeverity INT;
+        SELECT @ErrMsg = ERROR_MESSAGE(), @ErrSeverity = ERROR_SEVERITY();
+
+        SELECT -99 AS Result;
+        PRINT(@ErrMsg);
+    END CATCH
+END
+GO
