@@ -24,16 +24,34 @@ namespace RemoteBackupsApp.Infrastructure.Repositories
         }
 
         public async Task<IEnumerable<FileUploadProgress>> GetByUserId(
-            int userId, int pageNumber, int pageSize)
+            int userId, int pageNumber, int pageSize, string sortColumn = "", string sortDirection = "desc")
         {
             if (pageNumber < 1) pageNumber = 1;
             if (pageSize < 1) pageSize = 20;
 
-            var sql = @"
+            var allowedColumns = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                {
+                    { "FileName", "FileName" },
+                    { "ProgressPct", "ProgressPct" },
+                    { "Status", "Status" },
+                    { "StartedAt", "StartedAt" },
+                    { "UpdatedAt", "UpdatedAt" },
+                    { "CompletedAt", "CompletedAt" },
+                    { "CreatedAt", "CreatedAt" }
+                };
+
+            if (!allowedColumns.ContainsKey(sortColumn))
+                sortColumn = "CreatedAt";
+
+            if (!string.Equals(sortDirection, "asc", StringComparison.OrdinalIgnoreCase) &&
+                !string.Equals(sortDirection, "desc", StringComparison.OrdinalIgnoreCase))
+                sortDirection = "desc";
+
+            var sql = $@"
                         SELECT *
                         FROM dbo.vwFileUploadProgress
                         WHERE UserId = @UserId
-                        ORDER BY CreatedAt DESC, UserId
+                        ORDER BY {sortColumn} {sortDirection}
                         OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
                     ";
 

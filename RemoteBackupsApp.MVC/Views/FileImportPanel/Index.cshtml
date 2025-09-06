@@ -12,17 +12,89 @@
     @if (Model.Items.Any())
     {
         <div class="shadow-sm rounded-3 table-responsive table-scroll">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th class="text-center">Nazwa pliku</th>
-                        <th class="text-center">Postęp</th>
-                        <th class="text-center">Status</th>
-                        <th class="text-center">Rozpoczęto</th>
-                        <th class="text-center">Zaktualizowano</th>
-                        <th class="text-center">Zakończono</th>
-                    </tr>
-                </thead>
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="text-center">
+                                <a asp-action="Index"
+                                asp-route-pageNumber="@Model.PageNumber"
+                                asp-route-pageSize="@Model.PageSize"
+                                asp-route-sortColumn="FileName"
+                                asp-route-sortDirection="@(Model.SortColumn == "FileName" && Model.SortDirection == "asc" ? "desc" : "asc")">
+                                    Nazwa pliku
+                                    @if (Model.SortColumn == "FileName")
+                                    {
+                                        <i class="bi @(Model.SortDirection == "asc" ? "bi-caret-up-fill" : "bi-caret-down-fill")"></i>
+                                    }
+                                </a>
+                            </th>
+                            <th class="text-center">
+                                <a asp-action="Index"
+                                asp-route-pageNumber="@Model.PageNumber"
+                                asp-route-pageSize="@Model.PageSize"
+                                asp-route-sortColumn="ProgressPct"
+                                asp-route-sortDirection="@(Model.SortColumn == "ProgressPct" && Model.SortDirection == "asc" ? "desc" : "asc")">
+                                    Postęp
+                                    @if (Model.SortColumn == "ProgressPct")
+                                    {
+                                        <i class="bi @(Model.SortDirection == "asc" ? "bi-caret-up-fill" : "bi-caret-down-fill")"></i>
+                                    }
+                                </a>
+                            </th>
+                            <th class="text-center">
+                                <a asp-action="Index"
+                                asp-route-pageNumber="@Model.PageNumber"
+                                asp-route-pageSize="@Model.PageSize"
+                                asp-route-sortColumn="Status"
+                                asp-route-sortDirection="@(Model.SortColumn == "Status" && Model.SortDirection == "asc" ? "desc" : "asc")">
+                                    Status
+                                    @if (Model.SortColumn == "Status")
+                                    {
+                                        <i class="bi @(Model.SortDirection == "asc" ? "bi-caret-up-fill" : "bi-caret-down-fill")"></i>
+                                    }
+                                </a>
+                            </th>
+                            <th class="text-center">
+                                <a asp-action="Index"
+                                asp-route-pageNumber="@Model.PageNumber"
+                                asp-route-pageSize="@Model.PageSize"
+                                asp-route-sortColumn="StartedAt"
+                                asp-route-sortDirection="@(Model.SortColumn == "StartedAt" && Model.SortDirection == "asc" ? "desc" : "asc")">
+                                    Rozpoczęto
+                                    @if (Model.SortColumn == "StartedAt")
+                                    {
+                                        <i class="bi @(Model.SortDirection == "asc" ? "bi-caret-up-fill" : "bi-caret-down-fill")"></i>
+                                    }
+                                </a>
+                            </th>
+                            <th class="text-center">
+                                <a asp-action="Index"
+                                asp-route-pageNumber="@Model.PageNumber"
+                                asp-route-pageSize="@Model.PageSize"
+                                asp-route-sortColumn="UpdatedAt"
+                                asp-route-sortDirection="@(Model.SortColumn == "UpdatedAt" && Model.SortDirection == "asc" ? "desc" : "asc")">
+                                    Zaktualizowano
+                                    @if (Model.SortColumn == "UpdatedAt")
+                                    {
+                                        <i class="bi @(Model.SortDirection == "asc" ? "bi-caret-up-fill" : "bi-caret-down-fill")"></i>
+                                    }
+                                </a>
+                            </th>
+                            <th class="text-center">
+                                <a asp-action="Index"
+                                asp-route-pageNumber="@Model.PageNumber"
+                                asp-route-pageSize="@Model.PageSize"
+                                asp-route-sortColumn="CompletedAt"
+                                asp-route-sortDirection="@(Model.SortColumn == "CompletedAt" && Model.SortDirection == "asc" ? "desc" : "asc")">
+                                    Zakończono
+                                    @if (Model.SortColumn == "CompletedAt")
+                                    {
+                                        <i class="bi @(Model.SortDirection == "asc" ? "bi-caret-up-fill" : "bi-caret-down-fill")"></i>
+                                    }
+                                </a>
+                            </th>
+                        </tr>
+                    </thead>
                 <tbody>
                     @foreach (var item in Model.Items)
                     {

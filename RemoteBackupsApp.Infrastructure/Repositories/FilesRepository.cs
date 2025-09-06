@@ -35,6 +35,21 @@ namespace RemoteBackupsApp.Infrastructure.Repositories
         {
             if (pageNumber < 1) pageNumber = 1;
             if (pageSize < 1) pageSize = 5;
+            
+            var allowedColumns = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                { "FileName", "FileName" },
+                { "FileExtension", "FileExtension" },
+                { "FileSize", "FileSize" },
+                { "CreatedAt", "CreatedAt" }
+            };
+
+            if (!allowedColumns.ContainsKey(sortColumn))
+                sortColumn = "CreatedAt";
+
+            if (!string.Equals(sortDirection, "asc", StringComparison.OrdinalIgnoreCase) &&
+                !string.Equals(sortDirection, "desc", StringComparison.OrdinalIgnoreCase))
+                sortDirection = "desc";
 
             var sql = $@"
                         SELECT *
