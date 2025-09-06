@@ -5,37 +5,48 @@
     var nonce = Context.Items["ScriptNonce"]?.ToString();
 }
 @Html.AntiForgeryToken()
+
 <nav class="navbar navbar-expand-lg navbar-dark custom-navbar shadow-sm">
     <div class="container-fluid">
+
+        <!-- Brand -->
         <a class="navbar-brand fw-bold d-flex align-items-center" asp-controller="File" asp-action="Index">
             <i class="bi bi-cloud-arrow-up-fill me-2"></i> Remote Backups
         </a>
 
+        <!-- Toggler -->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
                 aria-controls="mainNavbar" aria-expanded="false" aria-label="Przełącz nawigację">
             <span class="navbar-toggler-icon"></span>
         </button>
 
+        <!-- Navbar Content -->
         <div class="collapse navbar-collapse" id="mainNavbar">
-            <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
+            <ul class="navbar-nav ms-auto align-items-lg-center">
+
+                <!-- Mobile & Desktop Buttons -->
+                <li class="nav-item me-lg-3">
+                    <a class="btn btn-outline-light fw-bold d-flex align-items-center justify-content-center custom-btn mb-2 mb-lg-0"
+                       asp-controller="File" asp-action="Index" title="Moje pliki">
+                        <i class="bi bi-folder2-open me-1 d-lg-none"></i>
+                        <span class="d-none d-lg-inline">Moje pliki</span>
+                    </a>
+                </li>
 
                 <li class="nav-item me-lg-3">
-                    <a class="btn btn-outline-light fw-bold d-flex align-items-center custom-btn" asp-controller="File" asp-action="Index">
-                        <i class="bi bi-folder2-open me-1"></i> Moje pliki
+                    <a class="btn btn-outline-light fw-bold d-flex align-items-center justify-content-center custom-btn mb-2 mb-lg-0"
+                       asp-controller="FileImportPanel" asp-action="Index" title="Panel importów">
+                        <i class="bi bi-files me-1 d-lg-none"></i>
+                        <span class="d-none d-lg-inline">Panel importów</span>
                     </a>
                 </li>
 
-                <li>
-                    <a class="btn btn-outline-light fw-bold d-flex align-items-center custom-btn" asp-controller="FileImportPanel" asp-action="Index">
-                        <i class="bi bi-files me-2"></i> Panel importów
-                    </a>
-                </li>
-
+                <!-- User Dropdown -->
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
-                       data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center justify-content-center" href="#"
+                       role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <img src="https://ui-avatars.com/api/?name=@userName&background=0D6EFD&color=fff&size=32"
-                             alt="avatar" class="rounded-circle me-2" none="@nonce" />
+                             alt="avatar" class="rounded-circle me-2" nonce="@nonce" />
                         <span class="d-none d-sm-inline">@userName</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end shadow rounded-3 custom-dropdown">

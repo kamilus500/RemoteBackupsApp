@@ -6,12 +6,8 @@
 }
 <partial name="/Views/Home/_Navbar.cshtml" />
 @Html.AntiForgeryToken()
+
 <div class="container my-4">
-    <div id="loadingSpinner" class="d-none text-center my-3">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Ładowanie...</span>
-        </div>
-    </div>
 
     <div class="text-center mb-3">
         <button type="button" class="btn btn-primary btn-sm px-3 loading-file-btn">
@@ -24,80 +20,32 @@
 
     @if (Model.Items.Any())
     {
-        <div class="shadow-sm rounded-3 table-responsive table-scroll">
+        <!-- Desktop Table -->
+        <div class="shadow-sm rounded-3 table-responsive table-scroll d-none d-md-block">
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-light sticky-top">
-                    <tr>
-                        <th class="text-center">
-                            <a asp-action="Index" 
-                            asp-route-pageNumber="@Model.PageNumber" 
-                            asp-route-pageSize="@Model.PageSize"
-                            asp-route-sortColumn="FileName"
-                            asp-route-sortDirection="@(Model.SortColumn == "FileName" && Model.SortDirection == "asc" ? "desc" : "asc")">
-                                Nazwa pliku
-                                @if (Model.SortColumn == "FileName")
-                                {
-                                    <i class="bi @(Model.SortDirection == "asc" ? "bi-caret-up-fill" : "bi-caret-down-fill")"></i>
-                                }
-                            </a>
-                        </th>
-                        <th class="text-center">
-                            <a asp-action="Index" 
-                            asp-route-pageNumber="@Model.PageNumber" 
-                            asp-route-pageSize="@Model.PageSize"
-                            asp-route-sortColumn="FileExtension"
-                            asp-route-sortDirection="@(Model.SortColumn == "FileExtension" && Model.SortDirection == "asc" ? "desc" : "asc")">
-                                Rozszerzenie
-                                @if (Model.SortColumn == "FileExtension")
-                                {
-                                    <i class="bi @(Model.SortDirection == "asc" ? "bi-caret-up-fill" : "bi-caret-down-fill")"></i>
-                                }
-                            </a>
-                        </th>
-                        <th class="text-center">
-                            <a asp-action="Index" 
-                            asp-route-pageNumber="@Model.PageNumber" 
-                            asp-route-pageSize="@Model.PageSize"
-                            asp-route-sortColumn="FileSize"
-                            asp-route-sortDirection="@(Model.SortColumn == "FileSize" && Model.SortDirection == "asc" ? "desc" : "asc")">
-                                Rozmiar
-                                @if (Model.SortColumn == "FileSize")
-                                {
-                                    <i class="bi @(Model.SortDirection == "asc" ? "bi-caret-up-fill" : "bi-caret-down-fill")"></i>
-                                }
-                            </a>
-                        </th>
-                        <th class="text-center">
-                            <a asp-action="Index" 
-                            asp-route-pageNumber="@Model.PageNumber" 
-                            asp-route-pageSize="@Model.PageSize"
-                            asp-route-sortColumn="CreatedAt"
-                            asp-route-sortDirection="@(Model.SortColumn == "CreatedAt" && Model.SortDirection == "asc" ? "desc" : "asc")">
-                                Data dodania
-                                @if (Model.SortColumn == "CreatedAt")
-                                {
-                                    <i class="bi @(Model.SortDirection == "asc" ? "bi-caret-up-fill" : "bi-caret-down-fill")"></i>
-                                }
-                            </a>
-                        </th>
-                        <th class="text-center">Akcje</th>
+                    <tr class="text-center">
+                        <th>Nazwa pliku</th>
+                        <th>Rozszerzenie</th>
+                        <th>Rozmiar</th>
+                        <th>Data dodania</th>
+                        <th>Akcje</th>
                     </tr>
                 </thead>
-
                 <tbody>
                     @foreach (var file in Model.Items)
                     {
-                        <tr>
-                            <td class="text-center text-truncate file-filename">@file.FileName</td>
-                            <td class="text-center">@file.FileExtension</td>
-                            <td class="text-center">@FileHelper.FormatBytes(file.FileSize)</td>
-                            <td class="text-center">@file.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
-                            <td class="text-center">
+                        <tr class="text-center">
+                            <td class="file-filename text-truncate">@file.FileName</td>
+                            <td>@file.FileExtension</td>
+                            <td>@FileHelper.FormatBytes(file.FileSize)</td>
+                            <td>@file.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                            <td>
                                 <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center">
-                                    <a asp-controller="File" asp-action="Download" asp-route-fileId="@file.FileId" class="btn btn-sm btn-primary">
+                                    <a asp-controller="File" asp-action="Download" asp-route-fileId="@file.FileId" class="btn btn-sm btn-primary w-100 w-sm-auto">
                                         <i class="bi bi-download me-1"></i> Pobierz
                                     </a>
-                                    <a asp-controller="File" asp-action="Delete" asp-route-fileId="@file.FileId" class="btn btn-sm btn-danger">
+                                    <a asp-controller="File" asp-action="Delete" asp-route-fileId="@file.FileId" class="btn btn-sm btn-danger w-100 w-sm-auto">
                                         <i class="bi bi-trash me-1"></i> Usuń
                                     </a>
                                 </div>
@@ -108,6 +56,29 @@
             </table>
         </div>
 
+        <!-- Mobile Cards -->
+        <div class="d-md-none">
+            @foreach (var file in Model.Items)
+            {
+                <div class="card mb-3 mobile-file-card">
+                    <div class="card-body">
+                        <h6 class="card-title text-truncate">@file.FileName</h6>
+                        <p class="card-text mb-1"><strong>Rozszerzenie:</strong> @file.FileExtension</p>
+                        <p class="card-text mb-1"><strong>Rozmiar:</strong> @FileHelper.FormatBytes(file.FileSize)</p>
+                        <p class="card-text mb-2"><strong>Data dodania:</strong> @file.CreatedAt.ToString("yyyy-MM-dd HH:mm")</p>
+                        <div class="d-flex flex-column gap-2">
+                            <a asp-controller="File" asp-action="Download" asp-route-fileId="@file.FileId" class="btn btn-primary w-100">
+                                <i class="bi bi-download me-1"></i> Pobierz
+                            </a>
+                            <a asp-controller="File" asp-action="Delete" asp-route-fileId="@file.FileId" class="btn btn-danger w-100">
+                                <i class="bi bi-trash me-1"></i> Usuń
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
         @if (Model.TotalPages > 1)
         {
             <nav aria-label="paging">
@@ -115,14 +86,12 @@
                     <li class="page-item @(Model.PageNumber == 1 ? "disabled" : "")">
                         <a class="page-link" asp-action="Index" asp-route-pageNumber="@(Model.PageNumber - 1)" asp-route-pageSize="@Model.PageSize">«</a>
                     </li>
-
                     @for (int i = 1; i <= Model.TotalPages; i++)
                     {
                         <li class="page-item @(i == Model.PageNumber ? "active" : "")">
                             <a class="page-link" asp-action="Index" asp-route-pageNumber="@i" asp-route-pageSize="@Model.PageSize">@i</a>
                         </li>
                     }
-
                     <li class="page-item @(Model.PageNumber == Model.TotalPages ? "disabled" : "")">
                         <a class="page-link" asp-action="Index" asp-route-pageNumber="@(Model.PageNumber + 1)" asp-route-pageSize="@Model.PageSize">»</a>
                     </li>
@@ -131,6 +100,3 @@
         }
     }
 </div>
-
-<script src="https://code.jquery.com/jquery-3.7.0.min.js" nonce="@nonce"></script>
-<script src="~/js/file.js" nonce="@nonce"></script>

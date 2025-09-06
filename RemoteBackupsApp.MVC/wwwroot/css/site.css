@@ -1,47 +1,49 @@
-/*Login Registration*/
+body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
 .card {
     border: none;
+    border-radius: 0.5rem;
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.background-section {
-    background: linear-gradient(135deg, #0d6efd, #6610f2);
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
 }
 
-.card-styling {
-    max-width: 450px;
-    border-radius: 1rem;
+.text-truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.nav-tabs .nav-link {
-    font-weight: 500;
-    font-size: 1rem;
-}
 
-.nav-tabs .nav-link.active {
-    border-bottom: 3px solid #0d6efd;
-    color: #0d6efd;
-}
-
-.form-control:focus {
-    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
-}
-
-.bg-primary {
+.background-section, .bg-primary {
     background: linear-gradient(135deg, #0d6efd, #6610f2) !important;
 }
 
-/*Navbar*/
 .custom-navbar {
     background: linear-gradient(135deg, #0d6efd, #6610f2);
 }
 
-.custom-btn {
+.custom-navbar .custom-btn {
     transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+    width: 100%;
 }
 
-.custom-btn:hover {
+.custom-navbar .custom-btn:hover {
     background-color: rgba(255, 255, 255, 0.2);
     color: #fff;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #ffc107;
 }
 
 .custom-dropdown {
@@ -58,26 +60,21 @@
     color: #fff;
 }
 
-.navbar-nav .nav-link:hover {
-    color: #ffc107;
+@media (min-width: 992px) {
+    .custom-navbar .custom-btn {
+        width: auto;
+        margin-bottom: 0;
+        padding: 0.35rem 0.75rem;
+    }
 }
 
-/*Files view*/
-
-.card {
-    transition: transform 0.2s, box-shadow 0.2s;
-    border-radius: 0.5rem;
+.navbar .rounded-circle {
+    width: 32px;
+    height: 32px;
 }
 
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-}
-
-.text-truncate {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+.navbar-toggler:hover {
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 .table-scroll {
@@ -85,9 +82,64 @@
     overflow-y: auto;
 }
 
-/*Progress bar*/
-.full-width-progress {
-    width: 100% !important;
+.table th, .table td {
+    vertical-align: middle !important;
+    text-align: center;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(13, 110, 253, 0.05);
+}
+
+
+@media (max-width: 767.98px) {
+    .mobile-file-card {
+        background: linear-gradient(135deg, #0d6efd, #6610f2);
+        color: #fff;
+        border-radius: 1rem;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        padding: 1rem;
+        transition: transform 0.2s, box-shadow 0.2s;
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+
+    .mobile-file-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.25);
+    }
+
+    .mobile-file-card .card-title,
+    .mobile-file-card .card-text {
+        color: #fff;
+        font-size: 0.875rem;
+    }
+
+    .mobile-file-card .btn-primary {
+        background: #ffc107;
+        border: none;
+        color: #212529;
+        font-weight: 500;
+        font-size: 0.875rem;
+        padding: 0.4rem 0.6rem;
+    }
+
+    .mobile-file-card .btn-primary:hover {
+        background: #e0a800;
+        color: #212529;
+    }
+
+    .mobile-file-card .btn-danger {
+        background: #dc3545;
+        border: none;
+        font-weight: 500;
+        font-size: 0.875rem;
+        padding: 0.4rem 0.6rem;
+    }
+
+    .mobile-file-card .btn-danger:hover {
+        background: #c82333;
+    }
 }
 
 .progress {
@@ -99,7 +151,7 @@
     text-align: center;
 }
 
-/*Popup*/
+
 .popup {
     display: none;
     position: fixed;
@@ -116,7 +168,7 @@
     word-wrap: break-word;
 }
 
-/*Loading spinner*/
+
 #loadingSpinner {
     position: fixed;
     top: 0;
@@ -136,22 +188,15 @@
     border-width: .6rem;
 }
 
-/*Change password site*/
 .change-password-container {
     min-height: 80vh;
 }
 
-/*Forms*/
 #uploadForm {
     display:none;
 }
 
-/*File*/
-.file-filename {
-    max-width: 200px;
-}
-
-/*File Upload*/
+.file-filename,
 .fileupload-filename {
-    max-width: 180px;
+    max-width: 200px;
 }
