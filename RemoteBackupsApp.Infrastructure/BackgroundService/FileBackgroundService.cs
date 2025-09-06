@@ -69,12 +69,11 @@ public class FileBackgroundService : BackgroundService
                 writtenBytes += read;
                 percent = (int)(writtenBytes * 100.0 / totalBytes);
 
-                await UpdateProgressAsync(filesUploadRepository, fileRequest.ProcessId, percent, "Uploading", stoppingToken);
+                string status = percent < 100 ? "Uploading" : "Completed";
 
-                //await Task.Delay(50, stoppingToken);    //For simulation of long upload
+                await UpdateProgressAsync(filesUploadRepository, fileRequest.ProcessId, percent, status, stoppingToken);
             }
 
-            await UpdateProgressAsync(filesUploadRepository, fileRequest.ProcessId, 100, "Completed", stoppingToken, true, fileRequest.FileName);
             await UploadSuccessOrFailedAsync(fileRequest.FileName, true, stoppingToken);
         }
         catch (Exception ex)
