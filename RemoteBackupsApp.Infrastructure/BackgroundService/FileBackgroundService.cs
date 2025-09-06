@@ -71,14 +71,16 @@ public class FileBackgroundService : BackgroundService
 
                 await UpdateProgressAsync(filesUploadRepository, fileRequest.ProcessId, percent, "Uploading", stoppingToken);
 
-                await Task.Delay(50, stoppingToken);    //For simulation of long upload
+                //await Task.Delay(50, stoppingToken);    //For simulation of long upload
             }
 
             await UpdateProgressAsync(filesUploadRepository, fileRequest.ProcessId, 100, "Completed", stoppingToken, true, fileRequest.FileName);
+            await UploadSuccessOrFailedAsync(fileRequest.FileName, true, stoppingToken);
         }
         catch (Exception ex)
         {
             await UpdateProgressAsync(filesUploadRepository, fileRequest.ProcessId, percent, "Failed", stoppingToken, fileName: fileRequest.FileName);
+            await UploadSuccessOrFailedAsync(fileRequest.FileName, false, stoppingToken);
         }
     }
 
@@ -96,5 +98,19 @@ public class FileBackgroundService : BackgroundService
         var updateProgress = new UpdateProgress(processId, percent, status, completed ? DateTime.UtcNow : null, fileName);
 
         await _hub.Clients.All.SendAsync("ProgressUpdated", updateProgress, cancellationToken: cancellationToken);
+    }
+    
+    private async Task UploadSuccessOrFailedAsync(
+        string fileName,
+        bool isCompleted,
+        CancellationToken cancellationToken)
+    {
+        var result = new
+        {
+            FileName = fileName,
+            IsCompleted = isCompleted
+        };
+
+        await _hub.Clients.All.SendAsync("UploadSuccess", result, cancellationToken: cancellationToken);
     }
 }

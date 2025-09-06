@@ -58,8 +58,7 @@ namespace RemoteBackupsApp.MVC.Controllers
 
             var userId = _memoryCache.Get<int>("UserId");
 
-            var filePath = Path.Combine("UserFiles", _memoryCache.Get<int>("UserId").ToString(), file.FileName);
-            var webRootPath = Path.Combine(_env.WebRootPath, "uploads") + $"\\{userId}";
+            var webRootPath = Path.Combine(_env.WebRootPath, "uploads", userId.ToString());
             var targetPath = Path.Combine(webRootPath, file.FileName);
 
             var request = new FileUploadRequest

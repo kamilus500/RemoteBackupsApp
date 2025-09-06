@@ -11,8 +11,12 @@ $(document).ready(function () {
         }
     });
 
-    connection.on("UploadSuccess", function () {
-
+    connection.on("UploadSuccess", function (data) {
+        if (data.isCompleted === true) {
+            showPopup(`<i class="bi bi-info-circle-fill text-primary"></i> Plik ${data.fileName} załadowany pomyślnie`);
+        } else {
+            showPopup(`<i class="bi bi-info-circle-fill text-primary"></i> Plik ${data.fileName} nie został załadowany pomyślnie`);
+        }
     })
 
     connection.on("ProgressUpdated", function (data) {
@@ -36,14 +40,10 @@ $(document).ready(function () {
             let $progressCompleteDate = $("#progress-completed-" + data.processId);
             let completedAt = new Date(data.date);
             $progressCompleteDate.text(completedAt.toISOString().slice(0, 16).replace("T", " "));
-
-            showPopup(`<i class="bi bi-info-circle-fill text-primary"></i> Plik ${data.fileName} załadowany pomyślnie`);
         }
         else if (data.status === "Failed") {
             $progressBar.addClass("bg-danger");
-            $progressBar.text("Failed");
-            showPopup(`<i class="bi bi-info-circle-fill text-primary"></i> Plik ${data.fileName} nie został załadowany pomyślnie`);
-        }
+            $progressBar.text("Failed");        }
         else {
             $progressBar.addClass("bg-info");
         }
