@@ -30,16 +30,17 @@ namespace RemoteBackupsApp.Infrastructure.Repositories
                             CommandType.Text);
             
 
-        public async Task<IEnumerable<FileDto>> GetFiles(int userId, int pageNumber, int pageSize)
+        public async Task<IEnumerable<FileDto>> GetFiles(int userId, int pageNumber, int pageSize,
+                string sortColumn = "CreatedAt", string sortDirection = "desc")
         {
             if (pageNumber < 1) pageNumber = 1;
             if (pageSize < 1) pageSize = 5;
 
-            var sql = @"
+            var sql = $@"
                         SELECT *
                         FROM dbo.vwUserFiles
                         WHERE UserId = @UserId AND IsDeleted = 0
-                        ORDER BY CreatedAt DESC
+                        ORDER BY {sortColumn} {sortDirection}
                         OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
                     ";
 

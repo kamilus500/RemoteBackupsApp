@@ -27,17 +27,20 @@ namespace RemoteBackupsApp.MVC.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 10)
+        public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 10,
+                string sortColumn = "CreatedAt", string sortDirection = "desc")
         {
             var userId = _memoryCache.Get<int>("UserId");
 
-            var files = await _fileRepository.GetFiles(userId, pageNumber, pageSize);
+            var files = await _fileRepository.GetFiles(userId, pageNumber, pageSize, sortColumn, sortDirection);
             var totalCount = await _fileRepository.GetFilesCount(userId);
 
             var model = new PagedResult<FileDto>
             {
                 Items = files,
                 PageNumber = pageNumber,
+                SortColumn = sortColumn,
+                SortDirection = sortDirection,
                 PageSize = pageSize,
                 TotalCount = totalCount
             };
