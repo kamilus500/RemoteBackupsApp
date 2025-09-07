@@ -24,12 +24,60 @@
         <div class="shadow-sm rounded-3 table-responsive table-scroll d-none d-md-block">
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-light sticky-top">
-                    <tr class="text-center">
-                        <th>Nazwa pliku</th>
-                        <th>Rozszerzenie</th>
-                        <th>Rozmiar</th>
-                        <th>Data dodania</th>
-                        <th>Akcje</th>
+                    <tr>
+                        <th class="text-center">
+                            <a asp-action="Index"
+                               asp-route-pageNumber="@Model.PageNumber"
+                               asp-route-pageSize="@Model.PageSize"
+                               asp-route-sortColumn="FileName"
+                               asp-route-sortDirection="@(Model.SortColumn == "FileName" && Model.SortDirection == "asc" ? "desc" : "asc")">
+                                Nazwa pliku
+                                @if (Model.SortColumn == "FileName")
+                                {
+                                    <i class="bi @(Model.SortDirection == "asc" ? "bi-caret-up-fill" : "bi-caret-down-fill")"></i>
+                                }
+                            </a>
+                        </th>
+                        <th class="text-center">
+                            <a asp-action="Index"
+                               asp-route-pageNumber="@Model.PageNumber"
+                               asp-route-pageSize="@Model.PageSize"
+                               asp-route-sortColumn="FileExtension"
+                               asp-route-sortDirection="@(Model.SortColumn == "FileExtension" && Model.SortDirection == "asc" ? "desc" : "asc")">
+                                Rozszerzenie
+                                @if (Model.SortColumn == "FileExtension")
+                                {
+                                    <i class="bi @(Model.SortDirection == "asc" ? "bi-caret-up-fill" : "bi-caret-down-fill")"></i>
+                                }
+                            </a>
+                        </th>
+                        <th class="text-center">
+                            <a asp-action="Index"
+                               asp-route-pageNumber="@Model.PageNumber"
+                               asp-route-pageSize="@Model.PageSize"
+                               asp-route-sortColumn="FileSize"
+                               asp-route-sortDirection="@(Model.SortColumn == "FileSize" && Model.SortDirection == "asc" ? "desc" : "asc")">
+                                Rozmiar
+                                @if (Model.SortColumn == "FileSize")
+                                {
+                                    <i class="bi @(Model.SortDirection == "asc" ? "bi-caret-up-fill" : "bi-caret-down-fill")"></i>
+                                }
+                            </a>
+                        </th>
+                        <th class="text-center">
+                            <a asp-action="Index"
+                               asp-route-pageNumber="@Model.PageNumber"
+                               asp-route-pageSize="@Model.PageSize"
+                               asp-route-sortColumn="CreatedAt"
+                               asp-route-sortDirection="@(Model.SortColumn == "CreatedAt" && Model.SortDirection == "asc" ? "desc" : "asc")">
+                                Data dodania
+                                @if (Model.SortColumn == "CreatedAt")
+                                {
+                                    <i class="bi @(Model.SortDirection == "asc" ? "bi-caret-up-fill" : "bi-caret-down-fill")"></i>
+                                }
+                            </a>
+                        </th>
+                        <th class="text-center">Akcje</th>
                     </tr>
                 </thead>
                 <tbody>
