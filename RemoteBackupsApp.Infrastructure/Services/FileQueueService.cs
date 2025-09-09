@@ -2,7 +2,7 @@
 using RemoteBackupsApp.Domain.Models;
 using System.Threading.Channels;
 
-namespace RemoteBackupsApp.Infrastructure.Repositories
+namespace RemoteBackupsApp.Infrastructure.Services
 {
     public class FileQueueService : IFileQueueService
     {

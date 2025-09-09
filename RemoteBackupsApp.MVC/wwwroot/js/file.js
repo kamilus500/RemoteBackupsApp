@@ -7,6 +7,8 @@
         if (this.files.length > 0) {
             var formData = new FormData($("#uploadForm")[0]);
 
+            var token = $('input[name="__RequestVerificationToken"]').val();
+
             $("#loadingSpinner").removeClass("d-none");
 
             var baseUrl = window.location.origin;
@@ -17,6 +19,9 @@
                 data: formData,
                 processData: false,
                 contentType: false,
+                headers: {
+                    'RequestVerificationToken': token
+                },
                 success: function () {
 
                 },
