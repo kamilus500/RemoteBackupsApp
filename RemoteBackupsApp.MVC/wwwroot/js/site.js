@@ -1,5 +1,11 @@
 ﻿
 $(document).ready(function () {
+    if (window.innerWidth < 768) {
+        document.querySelector(".table-file-import")?.remove();
+    } else {
+        document.querySelector(".d-md-none")?.remove();
+    }
+
     let connection = new signalR.HubConnectionBuilder()
         .withUrl("/uploadHub")
         .build();
