@@ -4,12 +4,11 @@ using System.Data;
 
 namespace RemoteBackupsApp.Infrastructure.Repositories
 {
-    public class FileUploadProcessRepository : IFileUploadProcessRepository
+    public class FileUploadProcessRepository : BaseRepository, IFileUploadProcessRepository
     {
-        private readonly ISqlService _sqlService;
-        public FileUploadProcessRepository(ISqlService sqlService)
+        public FileUploadProcessRepository(ISqlService sqlService) : base(sqlService)
         {
-            _sqlService = sqlService ?? throw new ArgumentNullException(nameof(sqlService));
+
         }
 
         public async Task<int> Create(int userId, int fileId)

@@ -4,12 +4,11 @@ using System.Data;
 
 namespace RemoteBackupsApp.Infrastructure.Repositories
 {
-    public class FilesRepository : IFilesRepository
+    public class FilesRepository : BaseRepository, IFilesRepository
     {
-        private readonly ISqlService _sqlService;
-        public FilesRepository(ISqlService sqlService)
+
+        public FilesRepository(ISqlService sqlService) : base(sqlService)
         {
-            _sqlService = sqlService ?? throw new ArgumentNullException(nameof(sqlService));
         }
 
         public async Task<int> Delete(int fileId, int userId)

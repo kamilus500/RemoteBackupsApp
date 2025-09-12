@@ -4,13 +4,10 @@ using System.Data;
 
 namespace RemoteBackupsApp.Infrastructure.Repositories
 {
-    public class AuthRepository : IAuthRepository
+    public class AuthRepository : BaseRepository, IAuthRepository
     {
-        private readonly ISqlService _sqlService;
-
-        public AuthRepository(ISqlService sqlService)
+        public AuthRepository(ISqlService sqlService) : base(sqlService)
         {
-            _sqlService = sqlService;
         }
 
         public async Task<LoginResult> LoginAsync(string userName, string password)
