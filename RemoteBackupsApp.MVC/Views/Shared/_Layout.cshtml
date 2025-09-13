@@ -8,10 +8,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - RemoteBackupsApp</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/RemoteBackupsApp.MVC.styles.css" asp-append-version="true" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" nonce="@nonce" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" nonce="@nonce" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" nonce="@nonce" href="~/RemoteBackupsApp.MVC.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" nonce="@nonce" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 </head>
 <body>
     <div id="loadingSpinner" class="d-none text-center mt-3">
@@ -29,6 +29,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js" nonce="@nonce"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
-    @await Component.InvokeAsync("NToastNotify", new { nonce = nonce })
+    <script src="/_content/NToastNotify/toastr.js" nonce="@nonce"></script>
 </body>
 </html>

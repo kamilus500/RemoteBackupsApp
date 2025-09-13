@@ -23,14 +23,13 @@ namespace RemoteBackupsApp.Infrastructure.Middlewares
 
             var csp = new StringBuilder();
             csp.Append("default-src 'self'; ");
-            csp.Append($"script-src 'self' 'nonce-{nonce}' https://unpkg.com https://cdnjs.cloudflare.com https://code.jquery.com https://cdn.jsdelivr.net;");
-            csp.Append("style-src 'self' https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com;");
-            csp.Append("font-src 'self' https://cdn.jsdelivr.net https://unpkg.com; ");
-            csp.Append("img-src 'self' https://ui-avatars.com data:;");
-            csp.Append("base-uri 'self'; ");
+            csp.Append($"script-src 'nonce-{nonce}' 'strict-dynamic' https://unpkg.com https://cdnjs.cloudflare.com https://code.jquery.com https://cdn.jsdelivr.net; ");
+            csp.Append($"style-src 'nonce-{nonce}' https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com;");
+            csp.Append($"font-src 'nonce-{nonce}' https://cdn.jsdelivr.net https://unpkg.com; ");
+            csp.Append($"img-src 'nonce-{nonce}' https://ui-avatars.com data:;");
+            csp.Append("base-uri; ");
             csp.Append("form-action 'self'; ");
             csp.Append("frame-ancestors 'none'; ");
-            csp.Append("report-uri /csp-report-endpoint; ");
 
             if (_env.IsDevelopment())
             {
