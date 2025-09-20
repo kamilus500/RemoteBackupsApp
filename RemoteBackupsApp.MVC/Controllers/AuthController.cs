@@ -12,14 +12,12 @@ namespace RemoteBackupsApp.MVC.Controllers
     {
         private readonly IAuthRepository _authRepository;
         private readonly IToastNotification _toastNotification;
-        private readonly IHubContext<UploadHub> _hub;
         private readonly IMemoryCache _memoryCache;
         public AuthController(IAuthRepository authRepository, IToastNotification toastNotification, IMemoryCache memoryCache, IHubContext<UploadHub> hub)
         {
             _authRepository = authRepository ?? throw new ArgumentNullException(nameof(authRepository));
             _toastNotification = toastNotification ?? throw new ArgumentNullException(nameof(toastNotification));
             _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
-            _hub = hub ?? throw new ArgumentNullException(nameof(hub));
         }
 
         [HttpGet]
